@@ -1,4 +1,4 @@
-# KotelezoProgramJava
+# Kotelezo Program Java (Heroes)
 Heroes of Magic &amp; Might duel
 
 Ez a projekt a programozas I. gyakorlati kurzushoz keszulo kotelezo programomat tartalmazza.
