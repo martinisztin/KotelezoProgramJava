@@ -3,6 +3,8 @@ package com.bkyzsa.heroeskotprog;
 public class Hos {
     private int tamadas, vedekezes, varazsero, tudas, moral, szerencse, arany;
     public int statuszAr;
+    public Varazslat elerhetoVarazslatok[] = {new Villamcsapas(), new Tuzlabda(), new Feltamasztas(), new Kotelbilincs(), new Harcimamor()};
+    public Egyseg egysegek[] = {new Foldmuves(), new Ijasz(), new Griff(), new Magus(), new Szupercsillagharcos()};
 
     public int getTamadas() {
         return tamadas;
@@ -59,6 +61,12 @@ public class Hos {
     public void setArany(int arany) {
         this.arany = arany;
     }
+
+    public void setElerhetoVarazslatok(boolean villamcsapas, boolean tuzlabda, boolean feltamasztas, boolean kotelbilincs, boolean harcimamor) {
+        elerhetoVarazslatok = new Varazslat[] {new Villamcsapas(villamcsapas), new Tuzlabda(tuzlabda), new Feltamasztas(feltamasztas), new Kotelbilincs(kotelbilincs), new Harcimamor(harcimamor)};
+    }
+
+    public void setEgysegek()
 
     public Hos(int arany) {
         this.arany = arany;

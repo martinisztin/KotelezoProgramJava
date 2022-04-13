@@ -18,11 +18,18 @@ public class Application extends javafx.application.Application {
 
     public static Hos playerHos;
     public static Hos comHos = new Hos(1000);
+
     public static Foldmuves allyFoldmuves = new Foldmuves();
     public static Ijasz allyIjasz = new Ijasz();
     public static Griff allyGriff = new Griff();
     public static Magus allyMagus = new Magus();
     public static Szupercsillagharcos allySaiyan = new Szupercsillagharcos();
+
+    public static Villamcsapas villamcsapas = new Villamcsapas();
+    public static Tuzlabda tuzlabda = new Tuzlabda();
+    public static Feltamasztas feltamasztas = new Feltamasztas();
+    public static Kotelbilincs kotelbilincs = new Kotelbilincs();
+    public static Harcimamor harcimamor = new Harcimamor();
 
     public static void main(String[] args) {
         launch();
