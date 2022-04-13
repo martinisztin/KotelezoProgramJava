@@ -2,6 +2,7 @@ package com.bkyzsa.heroeskotprog;
 
 public class Hos {
     private int tamadas, vedekezes, varazsero, tudas, moral, szerencse, arany;
+    public int statuszAr;
 
     public int getTamadas() {
         return tamadas;
@@ -62,5 +63,6 @@ public class Hos {
     public Hos(int arany) {
         this.arany = arany;
         tamadas = vedekezes = varazsero = tudas = moral = szerencse = 1;
+        statuszAr = 5;
     }
 }

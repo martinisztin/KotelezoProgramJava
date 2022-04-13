@@ -11,50 +11,45 @@
          <font>
             <Font name="System Bold" size="16.0" />
          </font></Label>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="185.0" layoutY="272.0" prefWidth="15.0" text="1" />
-      <Button layoutX="210.0" layoutY="268.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="268.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="272.0" prefWidth="100.0" text="Támadás" />
-      <Label alignment="CENTER" layoutX="185.0" layoutY="307.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
-      <Button layoutX="210.0" layoutY="303.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="303.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="307.0" prefWidth="100.0" text="Védekezés" />
-      <Label alignment="CENTER" layoutX="185.0" layoutY="341.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
-      <Button layoutX="210.0" layoutY="337.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="337.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="341.0" prefWidth="100.0" text="Varázserő" />
-      <Label alignment="CENTER" layoutX="185.0" layoutY="374.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
-      <Button layoutX="210.0" layoutY="370.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="370.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="374.0" prefWidth="100.0" text="Tudás" />
-      <Label alignment="CENTER" layoutX="185.0" layoutY="408.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
-      <Button layoutX="210.0" layoutY="404.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="404.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="408.0" prefWidth="100.0" text="Morál" />
-      <Label alignment="CENTER" layoutX="185.0" layoutY="442.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
-      <Button layoutX="210.0" layoutY="438.0" mnemonicParsing="false" text="+" />
-      <Button layoutX="154.0" layoutY="438.0" mnemonicParsing="false" text="-" />
-      <Label layoutX="42.0" layoutY="442.0" prefWidth="100.0" text="Szerencse" />
-      <TextField layoutX="441.0" layoutY="282.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="302.0" layoutY="286.0" prefWidth="130.0" text="Földműves" />
-      <TextField layoutX="441.0" layoutY="316.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="302.0" layoutY="320.0" prefWidth="130.0" text="Íjász" />
-      <TextField layoutX="441.0" layoutY="350.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="302.0" layoutY="354.0" prefWidth="130.0" text="Griff" />
-      <TextField layoutX="441.0" layoutY="384.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="302.0" layoutY="388.0" prefWidth="130.0" text="Mágus" />
-      <TextField layoutX="441.0" layoutY="418.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="302.0" layoutY="422.0" prefWidth="130.0" text="Szupercsillagharcos" />
-      <TextField layoutX="680.0" layoutY="281.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="541.0" layoutY="285.0" prefWidth="130.0" text="Villámcsapás" />
-      <TextField layoutX="680.0" layoutY="316.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="541.0" layoutY="320.0" prefWidth="130.0" text="Tűzlabda" />
-      <TextField layoutX="680.0" layoutY="350.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="541.0" layoutY="354.0" prefWidth="130.0" text="Feltámasztás" />
-      <TextField layoutX="680.0" layoutY="383.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="541.0" layoutY="387.0" prefWidth="130.0" text="Kötélbilincs" />
-      <TextField layoutX="680.0" layoutY="417.0" prefWidth="50.0" text="0" />
-      <Label alignment="CENTER" layoutX="541.0" layoutY="421.0" prefWidth="130.0" text="Harci Mámor" />
+      <Label fx:id="tamadas" alignment="CENTER" contentDisplay="CENTER" layoutX="205.0" layoutY="270.0" prefWidth="15.0" text="1" />
+      <Button layoutX="230.0" layoutY="266.0" mnemonicParsing="false" onAction="#addTamadas" text="+" />
+      <Button layoutX="174.0" layoutY="266.0" mnemonicParsing="false" onAction="#removeTamadas" text="-" />
+      <Label layoutX="62.0" layoutY="270.0" prefWidth="100.0" text="Támadás" />
+      <Label fx:id="vedekezes" alignment="CENTER" layoutX="205.0" layoutY="305.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
+      <Button layoutX="230.0" layoutY="301.0" mnemonicParsing="false" onAction="#addVedekezes" text="+" />
+      <Button layoutX="174.0" layoutY="301.0" mnemonicParsing="false" onAction="#removeVedekezes" text="-" />
+      <Label layoutX="62.0" layoutY="305.0" prefWidth="100.0" text="Védekezés" />
+      <Label fx:id="varazsero" alignment="CENTER" layoutX="205.0" layoutY="339.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
+      <Button layoutX="230.0" layoutY="335.0" mnemonicParsing="false" onAction="#addVarazsero" text="+" />
+      <Button layoutX="174.0" layoutY="335.0" mnemonicParsing="false" onAction="#removeVarazsero" text="-" />
+      <Label layoutX="62.0" layoutY="339.0" prefWidth="100.0" text="Varázserő" />
+      <Label fx:id="tudas" alignment="CENTER" layoutX="205.0" layoutY="372.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
+      <Button layoutX="230.0" layoutY="368.0" mnemonicParsing="false" onAction="#addTudas" text="+" />
+      <Button layoutX="174.0" layoutY="368.0" mnemonicParsing="false" onAction="#removeTudas" text="-" />
+      <Label layoutX="62.0" layoutY="372.0" prefWidth="100.0" text="Tudás" />
+      <Label fx:id="moral" alignment="CENTER" layoutX="205.0" layoutY="406.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
+      <Button layoutX="230.0" layoutY="402.0" mnemonicParsing="false" onAction="#addMoral" text="+" />
+      <Button layoutX="174.0" layoutY="402.0" mnemonicParsing="false" onAction="#removeMoral" text="-" />
+      <Label layoutX="62.0" layoutY="406.0" prefWidth="100.0" text="Morál" />
+      <Label fx:id="szerencse" alignment="CENTER" layoutX="205.0" layoutY="440.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
+      <Button layoutX="230.0" layoutY="436.0" mnemonicParsing="false" onAction="#addSzerencse" text="+" />
+      <Button layoutX="174.0" layoutY="436.0" mnemonicParsing="false" onAction="#removeSzerencse" text="-" />
+      <Label layoutX="62.0" layoutY="440.0" prefWidth="100.0" text="Szerencse" />
+      <TextField layoutX="468.0" layoutY="282.0" prefWidth="50.0" text="0" />
+      <Label fx:id="foldmuves" alignment="CENTER" layoutX="329.0" layoutY="286.0" onMouseEntered="#hoverOnFoldmuves" onMouseExited="#hoverOff" prefWidth="130.0" text="Földműves" />
+      <TextField layoutX="468.0" layoutY="316.0" prefWidth="50.0" text="0" />
+      <Label fx:id="ijasz" alignment="CENTER" layoutX="329.0" layoutY="320.0" onMouseEntered="#hoverOnIjasz" onMouseExited="#hoverOff" prefWidth="130.0" text="Íjász" />
+      <TextField layoutX="468.0" layoutY="350.0" prefWidth="50.0" text="0" />
+      <Label fx:id="griff" alignment="CENTER" layoutX="329.0" layoutY="354.0" onMouseEntered="#hoverOnGriff" onMouseExited="#hoverOff" prefWidth="130.0" text="Griff" />
+      <TextField layoutX="468.0" layoutY="384.0" prefWidth="50.0" text="0" />
+      <Label fx:id="magus" alignment="CENTER" layoutX="329.0" layoutY="388.0" onMouseEntered="#hoverOnMagus" onMouseExited="#hoverOff" prefWidth="130.0" text="Mágus" />
+      <TextField layoutX="468.0" layoutY="418.0" prefWidth="50.0" text="0" />
+      <Label fx:id="szupercsillagharcos" alignment="CENTER" layoutX="329.0" layoutY="422.0" onMouseEntered="#hoverOnSaiyan" onMouseExited="#hoverOff" prefWidth="130.0" text="Szupercsillagharcos" />
+      <Label alignment="CENTER" layoutX="604.0" layoutY="286.0" prefWidth="130.0" text="Villámcsapás" />
+      <Label alignment="CENTER" layoutX="604.0" layoutY="321.0" prefWidth="130.0" text="Tűzlabda" />
+      <Label alignment="CENTER" layoutX="604.0" layoutY="355.0" prefWidth="130.0" text="Feltámasztás" />
+      <Label alignment="CENTER" layoutX="604.0" layoutY="388.0" prefWidth="130.0" text="Kötélbilincs" />
+      <Label alignment="CENTER" layoutX="604.0" layoutY="422.0" prefWidth="130.0" text="Harci Mámor" />
       <Label layoutX="94.0" layoutY="191.0" text="Státuszpontok">
          <font>
             <Font size="20.0" />
@@ -76,5 +71,11 @@
          </font>
       </Label>
       <Button layoutX="679.0" layoutY="559.0" mnemonicParsing="false" text="Indulás a harcba!" />
+      <Label fx:id="info" alignment="CENTER" layoutX="232.0" layoutY="41.0" prefHeight="98.0" prefWidth="384.0" textAlignment="CENTER" />
+      <CheckBox layoutX="722.0" layoutY="287.0" mnemonicParsing="false" />
+      <CheckBox layoutX="722.0" layoutY="321.0" mnemonicParsing="false" />
+      <CheckBox layoutX="722.0" layoutY="355.0" mnemonicParsing="false" />
+      <CheckBox layoutX="722.0" layoutY="389.0" mnemonicParsing="false" />
+      <CheckBox layoutX="722.0" layoutY="422.0" mnemonicParsing="false" />
    </children>
 </AnchorPane>
