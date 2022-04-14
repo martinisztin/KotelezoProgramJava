@@ -119,21 +119,20 @@ public class ShopController implements Initializable {
             }
 
             case "villamcsapas" -> {
-                return Application.villamcsapas.getAr();
+                return Application.playerHos.elerhetoVarazslatok[0].getAr();
             }
             case "tuzlabda" -> {
-                return Application.tuzlabda.getAr();
+                return Application.playerHos.elerhetoVarazslatok[1].getAr();
             }
             case "feltamasztas" -> {
-                return Application.feltamasztas.getAr();
+                return Application.playerHos.elerhetoVarazslatok[2].getAr();
             }
             case "kotelbilincs" -> {
-                return Application.kotelbilincs.getAr();
+                return Application.playerHos.elerhetoVarazslatok[3].getAr();
             }
             case "harcimamor" -> {
-                return Application.harcimamor.getAr();
+                return Application.playerHos.elerhetoVarazslatok[4].getAr();
             }
-
 
         }
 
@@ -143,11 +142,11 @@ public class ShopController implements Initializable {
     @FXML
     public void hoverOn(MouseEvent event) {
         switch(((Label)event.getSource()).getText()) {
-            case "Tűzlabda" -> info.setText(Application.tuzlabda.toString());
-            case "Villámcsapás" -> info.setText(Application.villamcsapas.toString());
-            case "Feltámasztás" -> info.setText(Application.feltamasztas.toString());
-            case "Kötélbilincs" -> info.setText(Application.kotelbilincs.toString());
-            case "Harci Mámor" -> info.setText(Application.harcimamor.toString());
+            case "Tűzlabda" -> info.setText(Application.playerHos.elerhetoVarazslatok[0].toString());
+            case "Villámcsapás" -> info.setText(Application.playerHos.elerhetoVarazslatok[1].toString());
+            case "Feltámasztás" -> info.setText(Application.playerHos.elerhetoVarazslatok[2].toString());
+            case "Kötélbilincs" -> info.setText(Application.playerHos.elerhetoVarazslatok[3].toString());
+            case "Harci Mámor" -> info.setText(Application.playerHos.elerhetoVarazslatok[4].toString());
 
             case "Földműves" -> info.setText(Application.playerHos.egysegek[0].toString());
             case "Íjász" -> info.setText(Application.playerHos.egysegek[1].toString());

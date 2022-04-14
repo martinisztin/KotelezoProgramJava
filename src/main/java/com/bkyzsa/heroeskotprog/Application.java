@@ -19,11 +19,6 @@ public class Application extends javafx.application.Application {
     public static Hos playerHos;
     public static Hos comHos = new Hos(1000);
 
-    public static Villamcsapas villamcsapas = new Villamcsapas();
-    public static Tuzlabda tuzlabda = new Tuzlabda();
-    public static Feltamasztas feltamasztas = new Feltamasztas();
-    public static Kotelbilincs kotelbilincs = new Kotelbilincs();
-    public static Harcimamor harcimamor = new Harcimamor();
 
     public static void main(String[] args) {
         launch();
