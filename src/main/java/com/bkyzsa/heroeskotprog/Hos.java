@@ -4,7 +4,7 @@ public class Hos {
     private int tamadas, vedekezes, varazsero, tudas, moral, szerencse, arany;
     public int statuszAr;
     public Varazslat elerhetoVarazslatok[] = {new Villamcsapas(), new Tuzlabda(), new Feltamasztas(), new Kotelbilincs(), new Harcimamor()};
-    public Egyseg egysegek[] = {new Foldmuves(), new Ijasz(), new Griff(), new Magus(), new Szupercsillagharcos()};
+    public Egyseg egysegek[] = {new Foldmuves(this, 0), new Ijasz(this,0), new Griff(this, 0), new Magus(this, 0), new Szupercsillagharcos(this, 0)};
 
     public int getTamadas() {
         return tamadas;
@@ -66,7 +66,9 @@ public class Hos {
         elerhetoVarazslatok = new Varazslat[] {new Villamcsapas(villamcsapas), new Tuzlabda(tuzlabda), new Feltamasztas(feltamasztas), new Kotelbilincs(kotelbilincs), new Harcimamor(harcimamor)};
     }
 
-    public void setEgysegek()
+    public void setEgysegek(Hos gazda, int foldmuves, int ijasz, int griff, int magus, int szupercsillagparaszt) {
+        egysegek = new Egyseg[] {new Foldmuves(gazda, foldmuves), new Ijasz(gazda, ijasz), new Griff(gazda, griff), new Magus(gazda, magus), new Szupercsillagharcos(gazda, szupercsillagparaszt)};
+    }
 
     public Hos(int arany) {
         this.arany = arany;

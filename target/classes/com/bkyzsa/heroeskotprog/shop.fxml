@@ -14,27 +14,27 @@
       <Label fx:id="tamadas" alignment="CENTER" contentDisplay="CENTER" layoutX="205.0" layoutY="270.0" prefWidth="15.0" text="1" />
       <Button layoutX="230.0" layoutY="266.0" mnemonicParsing="false" onAction="#addTamadas" text="+" />
       <Button layoutX="174.0" layoutY="266.0" mnemonicParsing="false" onAction="#removeTamadas" text="-" />
-      <Label layoutX="62.0" layoutY="270.0" prefWidth="100.0" text="Támadás" />
+      <Label layoutX="62.0" layoutY="270.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Támadás" />
       <Label fx:id="vedekezes" alignment="CENTER" layoutX="205.0" layoutY="305.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
       <Button layoutX="230.0" layoutY="301.0" mnemonicParsing="false" onAction="#addVedekezes" text="+" />
       <Button layoutX="174.0" layoutY="301.0" mnemonicParsing="false" onAction="#removeVedekezes" text="-" />
-      <Label layoutX="62.0" layoutY="305.0" prefWidth="100.0" text="Védekezés" />
+      <Label layoutX="62.0" layoutY="305.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Védekezés" />
       <Label fx:id="varazsero" alignment="CENTER" layoutX="205.0" layoutY="339.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
       <Button layoutX="230.0" layoutY="335.0" mnemonicParsing="false" onAction="#addVarazsero" text="+" />
       <Button layoutX="174.0" layoutY="335.0" mnemonicParsing="false" onAction="#removeVarazsero" text="-" />
-      <Label layoutX="62.0" layoutY="339.0" prefWidth="100.0" text="Varázserő" />
+      <Label layoutX="62.0" layoutY="339.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Varázserő" />
       <Label fx:id="tudas" alignment="CENTER" layoutX="205.0" layoutY="372.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
       <Button layoutX="230.0" layoutY="368.0" mnemonicParsing="false" onAction="#addTudas" text="+" />
       <Button layoutX="174.0" layoutY="368.0" mnemonicParsing="false" onAction="#removeTudas" text="-" />
-      <Label layoutX="62.0" layoutY="372.0" prefWidth="100.0" text="Tudás" />
+      <Label layoutX="62.0" layoutY="372.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Tudás" />
       <Label fx:id="moral" alignment="CENTER" layoutX="205.0" layoutY="406.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
       <Button layoutX="230.0" layoutY="402.0" mnemonicParsing="false" onAction="#addMoral" text="+" />
       <Button layoutX="174.0" layoutY="402.0" mnemonicParsing="false" onAction="#removeMoral" text="-" />
-      <Label layoutX="62.0" layoutY="406.0" prefWidth="100.0" text="Morál" />
+      <Label layoutX="62.0" layoutY="406.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Morál" />
       <Label fx:id="szerencse" alignment="CENTER" layoutX="205.0" layoutY="440.0" prefWidth="15.0" text="1" textAlignment="RIGHT" />
       <Button layoutX="230.0" layoutY="436.0" mnemonicParsing="false" onAction="#addSzerencse" text="+" />
       <Button layoutX="174.0" layoutY="436.0" mnemonicParsing="false" onAction="#removeSzerencse" text="-" />
-      <Label layoutX="62.0" layoutY="440.0" prefWidth="100.0" text="Szerencse" />
+      <Label layoutX="62.0" layoutY="440.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Szerencse" />
       <TextField fx:id="foldmuves" layoutX="468.0" layoutY="269.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="273.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Földműves" />
       <TextField fx:id="ijasz" layoutX="468.0" layoutY="303.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />

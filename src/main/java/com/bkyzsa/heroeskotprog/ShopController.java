@@ -2,13 +2,18 @@ package com.bkyzsa.heroeskotprog;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -98,19 +103,19 @@ public class ShopController implements Initializable {
     private int arReturnerById(String content) {
         switch(content) {
             case "foldmuves" -> {
-                return Application.allyFoldmuves.getAr();
+                return Application.playerHos.egysegek[0].getAr();
             }
             case "ijasz" -> {
-                return Application.allyIjasz.getAr();
+                return Application.playerHos.egysegek[1].getAr();
             }
             case "griff" -> {
-                return Application.allyGriff.getAr();
+                return Application.playerHos.egysegek[2].getAr();
             }
             case "magus" -> {
-                return Application.allyMagus.getAr();
+                return Application.playerHos.egysegek[3].getAr();
             }
             case "szupercsillagharcos" -> {
-                return Application.allySaiyan.getAr();
+                return Application.playerHos.egysegek[4].getAr();
             }
 
             case "villamcsapas" -> {
@@ -144,11 +149,11 @@ public class ShopController implements Initializable {
             case "Kötélbilincs" -> info.setText(Application.kotelbilincs.toString());
             case "Harci Mámor" -> info.setText(Application.harcimamor.toString());
 
-            case "Földműves" -> info.setText(Application.allyFoldmuves.toString());
-            case "Íjász" -> info.setText(Application.allyIjasz.toString());
-            case "Griff" -> info.setText(Application.allyGriff.toString());
-            case "Mágus" -> info.setText(Application.allyMagus.toString());
-            case "Szupercsillagharcos" -> info.setText(Application.allySaiyan.toString());
+            case "Földműves" -> info.setText(Application.playerHos.egysegek[0].toString());
+            case "Íjász" -> info.setText(Application.playerHos.egysegek[1].toString());
+            case "Griff" -> info.setText(Application.playerHos.egysegek[2].toString());
+            case "Mágus" -> info.setText(Application.playerHos.egysegek[3].toString());
+            case "Szupercsillagharcos" -> info.setText(Application.playerHos.egysegek[4].toString());
 
             case "Támadás" -> info.setText("az egységek sebzését növeli meg, tulajdonságpontonként 10%-kal.");
             case "Védekezés" -> info.setText("az egységeket ért sebzést csökkenti, tulajdonságpontonként 5%-kal.");
@@ -401,7 +406,7 @@ public class ShopController implements Initializable {
     //endregion
 
     @FXML
-    public void harcPrepare() {
+    public void harcPrepare(ActionEvent event) throws IOException {
         int egysegCount = 0;
 
         TextField[] units = {foldmuves, ijasz, griff, magus, szupercsillagharcos};
@@ -413,19 +418,22 @@ public class ShopController implements Initializable {
             info.setText("Vásárolnod kell egységeket mielőtt harcba szállsz!");
         }
         else {
-            Label[] skills = {tamadas, vedekezes, varazsero, tudas, moral, szerencse};
 
-            Application.playerHos.setTamadas(Integer.parseInt(skills[0].getText()));
-            Application.playerHos.setVedekezes(Integer.parseInt(skills[1].getText()));
-            Application.playerHos.setVarazsero(Integer.parseInt(skills[2].getText()));
-            Application.playerHos.setTudas(Integer.parseInt(skills[3].getText()));
-            Application.playerHos.setMoral(Integer.parseInt(skills[4].getText()));
-            Application.playerHos.setSzerencse(Integer.parseInt(skills[5].getText()));
+            Application.playerHos.setTamadas(Integer.parseInt(tamadas.getText()));
+            Application.playerHos.setVedekezes(Integer.parseInt(vedekezes.getText()));
+            Application.playerHos.setVarazsero(Integer.parseInt(varazsero.getText()));
+            Application.playerHos.setTudas(Integer.parseInt(tudas.getText()));
+            Application.playerHos.setMoral(Integer.parseInt(moral.getText()));
+            Application.playerHos.setSzerencse(Integer.parseInt(szerencse.getText()));
 
-            CheckBox[] spells = {villamcsapas, tuzlabda, feltamasztas, kotelbilincs, harcimamor};
+            Application.playerHos.setElerhetoVarazslatok(villamcsapas.isSelected(), tuzlabda.isSelected(), feltamasztas.isSelected(), kotelbilincs.isSelected(), harcimamor.isSelected());
 
+            Application.playerHos.setEgysegek(Application.playerHos, Integer.parseInt(foldmuves.getText()), Integer.parseInt(ijasz.getText()), Integer.parseInt(griff.getText()), Integer.parseInt(magus.getText()), Integer.parseInt(szupercsillagharcos.getText()));
 
-
+            FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("field.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
 
         }
 
