@@ -34,6 +34,10 @@ public abstract class Varazslat {
         this.van = van;
     }
 
+    public boolean isVan() {
+        return van;
+    }
+
     @Override
     public String toString() {
         return leiras + "\nSebzés: (varázserő * " + sebzes + ")\nMana költség: " + manacost + " mana\nÁr: " + ar;

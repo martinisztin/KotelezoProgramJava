@@ -66,7 +66,7 @@
          </font>
       </Label>
       <Button layoutX="679.0" layoutY="559.0" mnemonicParsing="false" onAction="#harcPrepare" text="Indulás a harcba!" />
-      <Label fx:id="info" alignment="CENTER" contentDisplay="CENTER" layoutX="232.0" layoutY="41.0" prefHeight="98.0" prefWidth="384.0" wrapText="true" />
+      <Label fx:id="info" alignment="CENTER" contentDisplay="CENTER" layoutX="232.0" layoutY="23.0" prefHeight="159.0" prefWidth="384.0" wrapText="true" />
       <CheckBox fx:id="villamcsapas" layoutX="729.0" layoutY="274.0" mnemonicParsing="false" onAction="#spellVasarlo" />
       <CheckBox fx:id="tuzlabda" layoutX="729.0" layoutY="308.0" mnemonicParsing="false" onAction="#spellVasarlo" />
       <CheckBox fx:id="feltamasztas" layoutX="729.0" layoutY="342.0" mnemonicParsing="false" onAction="#spellVasarlo" />

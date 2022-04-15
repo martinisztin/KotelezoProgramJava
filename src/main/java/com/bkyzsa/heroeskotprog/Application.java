@@ -13,12 +13,13 @@ public class Application extends javafx.application.Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Heroes of Might & Magic - Duel");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 
     public static Hos playerHos;
-    public static Hos comHos = new Hos(1000);
 
+    public static DataContainer gameData;
 
     public static void main(String[] args) {
         launch();

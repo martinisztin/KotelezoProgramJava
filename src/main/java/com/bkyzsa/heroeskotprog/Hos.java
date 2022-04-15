@@ -75,4 +75,6 @@ public class Hos {
         tamadas = vedekezes = varazsero = tudas = moral = szerencse = 1;
         statuszAr = 5;
     }
+
+
 }

@@ -1,6 +1,6 @@
 package com.bkyzsa.heroeskotprog;
 
-public abstract class Egyseg {
+public abstract class Egyseg implements Comparable<Egyseg>{
 
     private String nev;
     private final int db;
@@ -9,8 +9,9 @@ public abstract class Egyseg {
     private final int sebzesinterval2;
     private final int hp;
     private final int sebesseg;
-    private final int kezdemenyezes;
+    private int kezdemenyezes;
     private final String kepesseg;
+    private int osszHp;
     private Hos gazda;
 
     public Egyseg(String nev, int db, int ar, int sebzesinterval1, int sebzesinterval2, int hp, int sebesseg, int kezdemenyezes, String kepesseg, Hos gazda) {
@@ -24,6 +25,11 @@ public abstract class Egyseg {
         this.kezdemenyezes = kezdemenyezes;
         this.kepesseg = kepesseg;
         this.gazda = gazda;
+    }
+
+    @Override
+    public int compareTo(Egyseg o) {
+        return (int)(this.kezdemenyezes - o.kezdemenyezes);
     }
 
     public String getNev() {
@@ -58,9 +64,23 @@ public abstract class Egyseg {
         return kezdemenyezes;
     }
 
+    public Hos getGazda() { return gazda; }
+
+    public void setKezdemenyezes(int kezdemenyezes) {
+        this.kezdemenyezes = kezdemenyezes;
+    }
+
+    public int getOsszHp() {
+        return osszHp;
+    }
+
+    public void setOsszHp(int osszhp) {
+        this.osszHp = osszhp;
+    }
+
     @Override
     public String toString() {
-        return "Sebzés: " + sebzesinterval1 + "-" + sebzesinterval2 + "\nÁr: " + ar + " arany / egység\nSebesség: " + sebesseg + "\nKezdeményezés: " + kezdemenyezes + "\nSpeciális képessége: " + kepesseg;
+        return "Életerő: " + hp + "\nSebzés: " + sebzesinterval1 + "-" + sebzesinterval2 + "\nÁr: " + ar + " arany / egység\nSebesség: " + sebesseg + "\nKezdeményezés: " + kezdemenyezes + "\nSpeciális képessége: " + kepesseg;
     }
 
     //public abstract void tamad();
