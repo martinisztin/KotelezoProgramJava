@@ -47,7 +47,7 @@ public class FightController implements Initializable {
     ImageView player1;
     @FXML
     ImageView player2;
-    /*@FXML
+    @FXML
     ImageView foldmuvesImg;
     @FXML
     ImageView ijaszImg;
@@ -56,7 +56,10 @@ public class FightController implements Initializable {
     @FXML
     ImageView magusImg;
     @FXML
-    ImageView saiyanImg;*/
+    ImageView saiyanImg;
+
+    @FXML
+    VBox lfeltamaszto;
 
     @FXML
     Label lpley;
@@ -66,6 +69,11 @@ public class FightController implements Initializable {
     Label details;
     @FXML
     Label details1;
+    @FXML
+    Label lmana;
+    @FXML
+    Label rmana;
+
 
     Image hosimg;
     Image foldmuves;
@@ -78,6 +86,7 @@ public class FightController implements Initializable {
     static Blend lepheto;
     static Blend tamadhato;
     static Blend valasztott;
+    static Blend support;
 
     static Blend p1szin;
     static Blend p2szin;
@@ -119,8 +128,13 @@ public class FightController implements Initializable {
     VBox lvarazslattarto;
 
     Button[] varazslatok;
+    ImageView[] felelesztos;
 
-    private int currentSorszam = 0;
+    Egyseg[] lplayerUnits;
+    Egyseg[] rplayerUnits;
+    Egyseg[][] startMap;
+
+    private int currentSorszam = -1;
     private int maxSorszam;
     private Egyseg[] currentsr;
 
@@ -136,6 +150,12 @@ public class FightController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+
+        //eltároljuk az eredetit hogy tudjunk felfele oszlopot játszani
+        lplayerUnits = Application.gameData.lplayer.egysegek;
+        rplayerUnits = Application.gameData.rplayer.egysegek;
+        startMap = Application.gameData.map;
+
         lvillamcsapas.setText("Villámcsapás");
         ltuzlabda.setText("Tűzlabda");
         lfeltamasztas.setText("Feltámasztás");
@@ -143,7 +163,6 @@ public class FightController implements Initializable {
         lharcimamor.setText("Harci mámor");
 
         varazslatok = new Button[]{lvillamcsapas, ltuzlabda, lfeltamasztas, lkotelbilincs, lharcimamor};
-
 
 
         for(int i = 0; i<varazslatok.length; i++) {
@@ -192,15 +211,30 @@ public class FightController implements Initializable {
         }
 
         hosimg = new Image("file:img/hos.jpg");
-        foldmuves = new Image("file:img/foldmuves.png");
 
+        foldmuves = new Image("file:img/foldmuves.png");
         ijasz = new Image("file:img/ijasz.png");
         griff = new Image("file:img/griff.png");
         magus = new Image("file:img/magus.png");
         szupercsillagharcos = new Image("file:img/szupercsillagharcos.png");
 
+        foldmuvesImg.setImage(foldmuves);
+        ijaszImg.setImage(ijasz);
+        griffImg.setImage(griff);
+        magusImg.setImage(magus);
+        saiyanImg.setImage(szupercsillagharcos);
+
+        felelesztos = new ImageView[]{foldmuvesImg, ijaszImg, griffImg, magusImg, saiyanImg};
+
+        for(ImageView iw : felelesztos) {
+            iw.setDisable(true);
+        }
+
         player1.setImage(hosimg);
         player2.setImage(hosimg);
+
+        lmana.setText(Application.gameData.lplayer.getTudas() * 10 + " mana");
+        rmana.setText(Application.gameData.rplayer.getTudas() * 10 + " mana");
 
         kor.setText("1. kör");
 
@@ -460,7 +494,7 @@ public class FightController implements Initializable {
     }
 
     @FXML
-    public void skillCast() {
+    public void skillCast(MouseEvent event) {
         //a tanult modon kijeloljuk az enemy szarjait
         //uthetove tesszuk, bar ezt pihentebben atgondolva lehet mashova rakom
 
@@ -468,6 +502,58 @@ public class FightController implements Initializable {
         //egy bool lesz mindenhol :D
         //szoval egy enemytarget function nagy lenne es kb csak at kene passzolni a boolt / global var
         //ugyis van mindegyik gombnak idje szoval majd egy giga switch case megoldja a bajt
+
+        switch(((ImageView)event.getSource()).getId()) {
+            case "lvillamcsapas" -> villamcsapasTamad = true;
+            case "ltuzlabda" ->tuzlabdaTamad = true;
+            case "lfeltamasztas" -> feltamasztasTamad = true;
+            case "lkotelbilincs" -> kotelblilincsTamad = true;
+            case "lharcimamor" -> harcimamorTamad = true;
+        }
+
+        if(villamcsapasTamad) {
+            for(Node node : field.getChildren()) {
+                for(int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() != Application.gameData.pakol) {
+                            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
+                                    GridPane.getRowIndex(node) == i && GridPane.getColumnIndex(node) == j) {
+                                node.setEffect(tamadhato);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(tuzlabdaTamad) {
+            for(Node node : field.getChildren()) {
+                if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
+                    node.setEffect(tamadhato);
+                }
+            }
+        }
+        if(feltamasztasTamad) {
+            Hos caster = Application.gameData.pakol;
+
+
+
+
+            //menjunk vegig az unitokon es nezzuk melyik halott, eltarolas jokerdes
+            if(Application.gameData.pakol == Application.gameData.lplayer) {
+                for(int i = 0; i < caster.egysegek.length; i++) {
+                    if(caster.egysegek[i].getDb() == 0 && lplayerUnits[i].getDb() != 0) {
+                        for(Node node : lfeltamaszto.getChildren()) {
+                            if(node instanceof ImageView) {
+                                if(Objects.equals(node.getId(), caster.egysegek[i].getNev() + "Img")) {
+                                    ((ImageView)node).setDisable(false);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
 
     }
 
@@ -491,7 +577,7 @@ public class FightController implements Initializable {
                 node.setEffect(null);
             }
         }
-        currentSorszam++;
+        //currentSorszam++;
         kovetkezo();
     }
 
@@ -519,21 +605,31 @@ public class FightController implements Initializable {
         boolean megvan = false;
         currentsr = handleSorrend(currentsr);
 
+        if(currentsr.length > currentSorszam)
+            currentSorszam++;
+
+        for(Egyseg e: currentsr) {
+            System.out.println(e.getNev());
+        }
+
+
         //System.out.println("\n\n\n");
         //for(Egyseg e : currentsr) {
             //if(e != null)
                 //System.out.println(e.getNev());
         //}
-
-        if(currentSorszam == maxSorszam) {
+        if(currentSorszam == currentsr.length) {
             currentSorszam = 0;
             kor.setText(++Application.gameData.kor + ". kör");
         }
 
         if(currentsr[currentSorszam].getDb() == 0) {
+            if(currentSorszam == currentsr.length)
             currentSorszam++;
             kovetkezo();
         }
+
+
         //dont ask miert 2 function
         printSorrend(currentsr);
 
@@ -585,12 +681,13 @@ public class FightController implements Initializable {
     @FXML
     public void valasztottUnitAction(MouseEvent event) {
 
+        //region misc
         printSorrend(handleSorrend(currentsr));
         String prefix = (Application.gameData.pakol == Application.gameData.lplayer ? "l" : "r");
         details1.setText("");
+        //endregion
 
-
-        //Hova léphet az úr illetve kiket támadhat? TODO FIX
+        //region Hova léphet az úr illetve kiket támadhat? TODO FIX
         if(((Node)event.getSource()).getEffect() == valasztott) {
             for (Node node : field.getChildren()) {
                 if(node instanceof ImageView) {
@@ -626,8 +723,9 @@ public class FightController implements Initializable {
 
             }
         }
+        //endregion
 
-        //ACTION: lépés
+        //region ACTION: lépés
 
         if(((Node)event.getSource()).getEffect() == lepheto) {
             for (Node node : field.getChildren()) {
@@ -669,19 +767,21 @@ public class FightController implements Initializable {
             }
 
             //mivel action ezért ez a unit mar nem tud mast csinalni a korben
-            currentSorszam++;
+            //currentSorszam++;
             kovetkezo();
             return;
         }
+        //endregion
 
         //Kiket támadhatunk ????????
         //specialis skillek :D
         //megvalositas a kovetkezo modon:
         //majd holnap, kiveve ha most eszembejut valami
 
-        //ACTION: TAMADAAAAAAAAAAAAAAAAS
+        //region ACTION: TAMADAAAAAAAAAAAAAAAAS
         if(((Node)event.getSource()).getEffect() == tamadhato) {
 
+            //region tamadasmisc
             String szenvedoUnit = "";
             //unit amit megtamadtak
             switch(Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getNev()) {
@@ -691,6 +791,18 @@ public class FightController implements Initializable {
                 case "magus" -> szenvedoUnit = "Mágus";
                 case "szupercsillagharcos" -> szenvedoUnit = "Szupercsillagharcos";
             }
+
+            String kuldoUnit = "";
+            //unit amit megtamadtak
+            switch(Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getNev()) {
+                case "foldmuves" -> kuldoUnit = "Földműves";
+                case "ijasz" -> kuldoUnit = "Íjász";
+                case "griff" -> kuldoUnit = "Griff";
+                case "magus" -> kuldoUnit = "Mágus";
+                case "szupercsillagharcos" -> kuldoUnit = "Szupercsillagharcos";
+            }
+
+
 
             //actual megtámadott unit id alapján :D
             Egyseg megtamadott = null;
@@ -708,13 +820,13 @@ public class FightController implements Initializable {
                 case "rmagus" -> megtamadott = Application.gameData.rplayer.egysegek[3];
                 case "rszupercsillagharcos" -> megtamadott = Application.gameData.rplayer.egysegek[4];
             }
+            //endregion
 
-
-            //Hős támad
+            //region Hős támad
             if (hosTamad) {
                 //a hős nem tud kritelni
                 boolean crit = false;
-                
+
                 int dmg = Application.gameData.pakol.getTamadas() * 10;
                 int currentHp = Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp();
 
@@ -741,11 +853,13 @@ public class FightController implements Initializable {
                         }
                     }
                 }
-                currentSorszam++;
+                //currentSorszam++;
                 hosTamad = false;
                 kovetkezo();
             }
+            //endregion
 
+            //region unit tamad
             if(unitTamad) {
                 //mennyi lesz a demidzs Odafelé
                 int dmg;
@@ -845,13 +959,13 @@ public class FightController implements Initializable {
                                 //map
                                 Application.gameData.map[row][col] = null;
 
-                                details1.setText("HALÁLOS VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+                                details1.setText("HALÁLOS VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.rplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
                             }
                             //nem halt szoval csak frissitsuk az infokat
                             else {
                                 //darabszam
-                                details1.setText("VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+                                details1.setText("VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
                                 boolean vanserult = Application.gameData.map[row][col].getOsszHp() % Application.gameData.map[row][col].getHp() != 0;
 
@@ -887,13 +1001,14 @@ public class FightController implements Initializable {
                         }
                     }
                 }
-                currentSorszam++;
                 unitTamad = false;
                 kovetkezo();
             }
+            //endregion
 
 
         }
+        //endregion
 
     }
 
