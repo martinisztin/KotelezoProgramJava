@@ -238,7 +238,7 @@ public class FieldController implements Initializable {
 
 
         //units
-        int[] units = new int[] {0, 10 + rnd.nextInt(20), 10, 5 + rnd.nextInt(8), 1 + rnd.nextInt(5)};
+        int[] units = new int[] {0, 8 + rnd.nextInt(20), 10, 4 + rnd.nextInt(8), 1 + rnd.nextInt(5)};
 
         int reszar;
         sum = 0;

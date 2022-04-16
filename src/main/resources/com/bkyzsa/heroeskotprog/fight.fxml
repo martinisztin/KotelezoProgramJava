@@ -162,7 +162,7 @@
       <ImageView fx:id="player2" cache="true" fitHeight="100.0" fitWidth="100.0" layoutX="886.0" layoutY="670.0" pickOnBounds="true" preserveRatio="true" scaleX="-1.0" />
       <Button fx:id="lvarakozas" layoutX="14.0" layoutY="602.0" mnemonicParsing="false" onAction="#varakozas" prefHeight="25.0" prefWidth="100.0" text="Várakozás" />
       <Button fx:id="lvarazslas" layoutX="14.0" layoutY="566.0" mnemonicParsing="false" onAction="#varazslas" prefHeight="25.0" prefWidth="100.0" text="Hős varázslás" />
-      <Button fx:id="ltamadas" layoutX="14.0" layoutY="529.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Hős támadás" />
+      <Button fx:id="ltamadas" layoutX="14.0" layoutY="529.0" mnemonicParsing="false" onAction="#hosTamadas" prefHeight="25.0" prefWidth="100.0" text="Hős támadás" />
       <Label fx:id="kor" alignment="CENTER" layoutX="431.0" layoutY="36.0" prefHeight="40.0" prefWidth="139.0" text="1. kör" textAlignment="CENTER">
          <font>
             <Font size="28.0" />
@@ -209,6 +209,7 @@
             <Button fx:id="lharcimamor" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
          </children>
       </VBox>
-      <Label fx:id="details" alignment="CENTER" contentDisplay="CENTER" layoutX="284.0" layoutY="693.0" prefHeight="56.0" prefWidth="432.0" textAlignment="CENTER" />
+      <Label fx:id="details" alignment="CENTER" contentDisplay="CENTER" layoutX="262.0" layoutY="693.0" prefHeight="56.0" prefWidth="477.0" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="details1" alignment="CENTER" contentDisplay="CENTER" layoutX="285.0" layoutY="757.0" prefHeight="25.0" prefWidth="432.0" textAlignment="CENTER" />
    </children>
 </AnchorPane>

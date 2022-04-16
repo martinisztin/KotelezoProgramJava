@@ -2,8 +2,8 @@ package com.bkyzsa.heroeskotprog;
 
 public abstract class Egyseg implements Comparable<Egyseg>{
 
-    private String nev;
-    private final int db;
+    private final String nev;
+    private int db;
     private final int ar;
     private final int sebzesinterval1;
     private final int sebzesinterval2;
@@ -70,6 +70,10 @@ public abstract class Egyseg implements Comparable<Egyseg>{
         this.kezdemenyezes = kezdemenyezes;
     }
 
+    public void setDb(int db) {
+        this.db = db;
+    }
+
     public int getOsszHp() {
         return osszHp;
     }
@@ -77,6 +81,8 @@ public abstract class Egyseg implements Comparable<Egyseg>{
     public void setOsszHp(int osszhp) {
         this.osszHp = osszhp;
     }
+
+
 
     @Override
     public String toString() {
