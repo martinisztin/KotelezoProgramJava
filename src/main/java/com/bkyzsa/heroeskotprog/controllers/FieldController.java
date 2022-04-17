@@ -1,6 +1,6 @@
 package com.bkyzsa.heroeskotprog.controllers;
 
-import com.bkyzsa.heroeskotprog.Application;
+import com.bkyzsa.heroeskotprog.Main;
 import com.bkyzsa.heroeskotprog.units.Egyseg;
 import com.bkyzsa.heroeskotprog.spells.Varazslat;
 import javafx.event.ActionEvent;
@@ -55,7 +55,7 @@ public class FieldController implements Initializable {
     Button harcSetter;
 
 
-    static boolean felkeszules = true;
+    boolean felkeszules;
 
 
     static Image hosimg;
@@ -72,6 +72,7 @@ public class FieldController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        felkeszules = true;
         hosimg = new Image("file:img/hos.jpg");
         foldmuves = new Image("file:img/foldmuves.png");
         ijasz = new Image("file:img/ijasz.png");
@@ -98,12 +99,12 @@ public class FieldController implements Initializable {
         }
 
         lpley.setText("1. játékos");
-        rpley.setText(Application.gameData.multiplayer ? "2. játékos" : "BOT játékos");
+        rpley.setText(Main.gameData.multiplayer ? "2. játékos" : "BOT játékos");
 
         ImageView[] units = new ImageView[]{foldmuvesImg, ijaszImg, griffImg, magusImg, saiyanImg};
 
         for(int i = 0; i<5; i++) {
-            if(Application.gameData.pakol.egysegek[i].getDb() == 0) {
+            if(Main.gameData.pakol.egysegek[i].getDb() == 0) {
                 units[i].setOpacity(0.3);
                 units[i].setDisable(true);
             }
@@ -116,11 +117,11 @@ public class FieldController implements Initializable {
         String output = "";
 
         switch(((ImageView)event.getSource()).getId()) {
-            case "foldmuvesImg" -> output = Application.gameData.pakol.egysegek[0].getDb() + " db Földműves";
-            case "ijaszImg" -> output = Application.gameData.pakol.egysegek[1].getDb() + " db Íjász";
-            case "griffImg" -> output = Application.gameData.pakol.egysegek[2].getDb() + " db Griff";
-            case "magusImg" -> output = Application.gameData.pakol.egysegek[3].getDb() + " db Mágus";
-            case "saiyanImg" -> output = Application.gameData.pakol.egysegek[4].getDb() + " db Szupercsillagharcos";
+            case "foldmuvesImg" -> output = Main.gameData.pakol.egysegek[0].getDb() + " db Földműves";
+            case "ijaszImg" -> output = Main.gameData.pakol.egysegek[1].getDb() + " db Íjász";
+            case "griffImg" -> output = Main.gameData.pakol.egysegek[2].getDb() + " db Griff";
+            case "magusImg" -> output = Main.gameData.pakol.egysegek[3].getDb() + " db Mágus";
+            case "saiyanImg" -> output = Main.gameData.pakol.egysegek[4].getDb() + " db Szupercsillagharcos";
         }
 
         info.setText(output);
@@ -153,15 +154,15 @@ public class FieldController implements Initializable {
 
         info.setText("Helyezd el az egységet a rendelkezésre álló területen.");
 
-        kattintott = Application.gameData.pakol.egysegek[index];
+        kattintott = Main.gameData.pakol.egysegek[index];
 
         //hova lehet rakni kijelolese
         for (Node node: field.getChildren()) {
             if(node instanceof ImageView) {
-                if(((ImageView)node).getImage().getUrl().contains("notnull") && GridPane.getColumnIndex(node) != null && Application.gameData.pakol == Application.gameData.lplayer && GridPane.getColumnIndex(node) < 2) {
+                if(((ImageView)node).getImage().getUrl().contains("notnull") && GridPane.getColumnIndex(node) != null && Main.gameData.pakol == Main.gameData.lplayer && GridPane.getColumnIndex(node) < 2) {
                     ((ImageView)node).setImage(chooseable);
                 }
-                if(((ImageView)node).getImage().getUrl().contains("notnull") && GridPane.getColumnIndex(node) != null && Application.gameData.pakol == Application.gameData.rplayer && GridPane.getColumnIndex(node) > 9) {
+                if(((ImageView)node).getImage().getUrl().contains("notnull") && GridPane.getColumnIndex(node) != null && Main.gameData.pakol == Main.gameData.rplayer && GridPane.getColumnIndex(node) > 9) {
                     ((ImageView)node).setImage(chooseable);
                 }
             }
@@ -184,14 +185,14 @@ public class FieldController implements Initializable {
                     //ha van ki kene torolni az elozo helyen
                     for(int i = 0; i < 10; i++) {
                         for (int j = 0; j < 12; j++) {
-                            if(Application.gameData.map[i][j] == kattintott) {
-                                Application.gameData.map[i][j] = null;
+                            if(Main.gameData.map[i][j] == kattintott) {
+                                Main.gameData.map[i][j] = null;
                                 break;
                             }
                         }
                     }
 
-                    Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = kattintott;
+                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = kattintott;
 
 
 
@@ -223,16 +224,16 @@ public class FieldController implements Initializable {
 
         int vedekezes = 15 - sum;
 
-        Application.gameData.rplayer.setTamadas(skills[0]);
-        Application.gameData.rplayer.setVedekezes(vedekezes);
-        Application.gameData.rplayer.setVarazsero(skills[2]);
-        Application.gameData.rplayer.setTudas(skills[3]);
-        Application.gameData.rplayer.setMoral(skills[4]);
-        Application.gameData.rplayer.setSzerencse(skills[5]);
+        Main.gameData.rplayer.setTamadas(skills[0]);
+        Main.gameData.rplayer.setVedekezes(vedekezes);
+        Main.gameData.rplayer.setVarazsero(skills[2]);
+        Main.gameData.rplayer.setTudas(skills[3]);
+        Main.gameData.rplayer.setMoral(skills[4]);
+        Main.gameData.rplayer.setSzerencse(skills[5]);
 
 
         //15 skill = 222 gold
-        Application.gameData.rplayer.setArany(778);
+        Main.gameData.rplayer.setArany(778);
 
         System.out.println("kepessegre koltott: " + (sum + vedekezes));
 
@@ -241,17 +242,17 @@ public class FieldController implements Initializable {
         boolean[] varazslat = new boolean[]{false, false, false, false, false};
         varazslat[rnd.nextInt(varazslat.length)] = true;
 
-        Application.gameData.rplayer.setElerhetoVarazslatok(varazslat[0], varazslat[1], varazslat[2], varazslat[3], varazslat[4]);
+        Main.gameData.rplayer.setElerhetoVarazslatok(varazslat[0], varazslat[1], varazslat[2], varazslat[3], varazslat[4]);
 
         int ar = 0;
-        for(Varazslat v : Application.gameData.rplayer.elerhetoVarazslatok)
+        for(Varazslat v : Main.gameData.rplayer.elerhetoVarazslatok)
             if(v.isVan())
             {
                 ar = v.getAr();
                 System.out.println("skille: " + v.getLeiras());
             }
 
-        Application.gameData.rplayer.setArany(778 - ar);
+        Main.gameData.rplayer.setArany(778 - ar);
 
 
         //units
@@ -261,42 +262,42 @@ public class FieldController implements Initializable {
         sum = 0;
 
         for (int i=1; i < units.length; i++) {
-            reszar = units[i] * Application.gameData.rplayer.egysegek[i].getAr();
-            System.out.println("unit: " + Application.gameData.rplayer.egysegek[i].getNev() + " " + units[i]);
+            reszar = units[i] * Main.gameData.rplayer.egysegek[i].getAr();
+            System.out.println("unit: " + Main.gameData.rplayer.egysegek[i].getNev() + " " + units[i]);
             sum += reszar;
         }
 
-        int fold = (Application.gameData.rplayer.getArany() - sum) / 2;
+        int fold = (Main.gameData.rplayer.getArany() - sum) / 2;
         System.out.println("foldmuves: " +fold);
-        System.out.println(Application.gameData.rplayer.getArany() + "-" + sum );
+        System.out.println(Main.gameData.rplayer.getArany() + "-" + sum );
 
-        Application.gameData.rplayer.setArany(Application.gameData.rplayer.getArany() - sum);
+        Main.gameData.rplayer.setArany(Main.gameData.rplayer.getArany() - sum);
 
 
-        Application.gameData.rplayer.setEgysegek(Application.gameData.rplayer, fold, units[1], units[2], units[3], units[4]);
+        Main.gameData.rplayer.setEgysegek(Main.gameData.rplayer, fold, units[1], units[2], units[3], units[4]);
 
-        Application.gameData.rplayer.egysegek[0].setOsszHp(Application.gameData.rplayer.egysegek[0].getHp() * Application.gameData.rplayer.egysegek[0].getDb());
-        Application.gameData.rplayer.egysegek[1].setOsszHp(Application.gameData.rplayer.egysegek[1].getHp() * Application.gameData.rplayer.egysegek[1].getDb());
-        Application.gameData.rplayer.egysegek[2].setOsszHp(Application.gameData.rplayer.egysegek[2].getHp() * Application.gameData.rplayer.egysegek[2].getDb());
-        Application.gameData.rplayer.egysegek[3].setOsszHp(Application.gameData.rplayer.egysegek[3].getHp() * Application.gameData.rplayer.egysegek[3].getDb());
-        Application.gameData.rplayer.egysegek[4].setOsszHp(Application.gameData.rplayer.egysegek[4].getHp() * Application.gameData.rplayer.egysegek[4].getDb());
+        Main.gameData.rplayer.egysegek[0].setOsszHp(Main.gameData.rplayer.egysegek[0].getHp() * Main.gameData.rplayer.egysegek[0].getDb());
+        Main.gameData.rplayer.egysegek[1].setOsszHp(Main.gameData.rplayer.egysegek[1].getHp() * Main.gameData.rplayer.egysegek[1].getDb());
+        Main.gameData.rplayer.egysegek[2].setOsszHp(Main.gameData.rplayer.egysegek[2].getHp() * Main.gameData.rplayer.egysegek[2].getDb());
+        Main.gameData.rplayer.egysegek[3].setOsszHp(Main.gameData.rplayer.egysegek[3].getHp() * Main.gameData.rplayer.egysegek[3].getDb());
+        Main.gameData.rplayer.egysegek[4].setOsszHp(Main.gameData.rplayer.egysegek[4].getHp() * Main.gameData.rplayer.egysegek[4].getDb());
 
-        Application.gameData.rplayer.setMana(Application.gameData.rplayer.getTudas() * 10);
+        Main.gameData.rplayer.setMana(Main.gameData.rplayer.getTudas() * 10);
 
         //we got 0 gold
-        System.out.println(Application.gameData.rplayer.getArany() - (fold * 2));
+        System.out.println(Main.gameData.rplayer.getArany() - (fold * 2));
 
 
         //pakolássza le a dolgait
-        for(int i = 0; i < Application.gameData.rplayer.egysegek.length; i++) {
+        for(int i = 0; i < Main.gameData.rplayer.egysegek.length; i++) {
             boolean sikerult = false;
 
             while(!sikerult) {
                 int sor = rnd.nextInt(10);
                 int oszlop = 10 + rnd.nextInt(2);
 
-                if(Application.gameData.map[sor][oszlop] == null) {
-                    Application.gameData.map[sor][oszlop] = Application.gameData.rplayer.egysegek[i];
+                if(Main.gameData.map[sor][oszlop] == null) {
+                    Main.gameData.map[sor][oszlop] = Main.gameData.rplayer.egysegek[i];
                     sikerult = true;
                 }
             }
@@ -308,14 +309,14 @@ public class FieldController implements Initializable {
     public void startGame(ActionEvent event) throws IOException {
 
         int vartLerakottDb = 0, lerakottDb = 0;
-        for(Egyseg e: Application.gameData.pakol.egysegek) {
+        for(Egyseg e: Main.gameData.pakol.egysegek) {
             if(e.getDb() > 0) {
                 vartLerakottDb++;
             }
         }
         for(Node node: field.getChildren()) {
             if(node instanceof ImageView) {
-                for(Egyseg e: Application.gameData.pakol.egysegek) {
+                for(Egyseg e: Main.gameData.pakol.egysegek) {
                     if(((ImageView)node).getImage().getUrl().contains(e.getNev())) {
                         lerakottDb++;
                     }
@@ -328,13 +329,13 @@ public class FieldController implements Initializable {
         }
         else {
             //ha multi akkor ez kicsit más
-            if(!Application.gameData.multiplayer) {
+            if(!Main.gameData.multiplayer) {
                 felkeszules = false;
                 info.setText("Az ellenfél AI építi a stratégiáját...");
                 aiInitizalize();
-                Application.gameData.print();
+                Main.gameData.print();
 
-                FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("fight.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("statsummary.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setResizable(false);
@@ -343,11 +344,10 @@ public class FieldController implements Initializable {
             }
             else {
 
-                //TODO pakol a rplayer
-                if(Application.gameData.pakol != Application.gameData.rplayer) {
-                    Application.gameData.pakol = Application.gameData.rplayer;
+                if(Main.gameData.pakol != Main.gameData.rplayer) {
+                    Main.gameData.pakol = Main.gameData.rplayer;
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("shop.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("shop.fxml"));
                     Scene scene = new Scene(fxmlLoader.load());
                     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     stage.setResizable(false);
@@ -356,7 +356,7 @@ public class FieldController implements Initializable {
                 else {
                     felkeszules = false;
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("fight.fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("statsummary.fxml"));
                     Scene scene = new Scene(fxmlLoader.load());
                     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                     stage.setResizable(false);

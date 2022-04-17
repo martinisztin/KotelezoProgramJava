@@ -1,6 +1,6 @@
 package com.bkyzsa.heroeskotprog.controllers;
 
-import com.bkyzsa.heroeskotprog.Application;
+import com.bkyzsa.heroeskotprog.Main;
 import com.bkyzsa.heroeskotprog.DataContainer;
 import com.bkyzsa.heroeskotprog.units.Hos;
 import javafx.event.ActionEvent;
@@ -20,26 +20,26 @@ public class Controller {
 
     @FXML
     protected void difficultyKonnyu(ActionEvent event) throws IOException {
-        Application.playerHos = new Hos(1300);
+        Main.playerHos = new Hos(1300);
         loadNext(event, multiplayer.isSelected());
     }
 
     @FXML
     protected void difficultyKozepes(ActionEvent event) throws IOException {
-        Application.playerHos = new Hos(1000);
+        Main.playerHos = new Hos(1000);
         loadNext(event, multiplayer.isSelected());
     }
 
     @FXML
     protected void difficultyNehez(ActionEvent event) throws IOException {
-        Application.playerHos = new Hos(700);
+        Main.playerHos = new Hos(700);
         loadNext(event, multiplayer.isSelected());
     }
 
     private void loadNext(ActionEvent event, boolean bMultiplayer) throws IOException {
-        Application.gameData = new DataContainer(Application.playerHos, new Hos(bMultiplayer ? Application.playerHos.getArany() : 1000), bMultiplayer);
-        Application.gameData.pakol = Application.gameData.lplayer;
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("shop.fxml"));
+        Main.gameData = new DataContainer(Main.playerHos, new Hos(bMultiplayer ? Main.playerHos.getArany() : 1000), bMultiplayer);
+        Main.gameData.pakol = Main.gameData.lplayer;
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("shop.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);

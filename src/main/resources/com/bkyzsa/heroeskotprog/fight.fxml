@@ -170,7 +170,7 @@
       </Label>
        <Label fx:id="lpley" layoutX="39.0" layoutY="640.0" text="1. játékos" />
        <Label fx:id="rpley" alignment="CENTER" layoutX="895.0" layoutY="640.0" prefHeight="17.0" prefWidth="82.0" text="2. játékos" textAlignment="CENTER" />
-      <GridPane fx:id="nexts" gridLinesVisible="true" layoutX="262.0" layoutY="629.0" prefHeight="45.0" prefWidth="477.0">
+      <GridPane fx:id="nexts" gridLinesVisible="true" layoutX="263.0" layoutY="618.0" prefHeight="45.0" prefWidth="477.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -202,16 +202,16 @@
       <Label layoutX="429.0" layoutY="594.0" text="Soron következő egységek" />
       <VBox fx:id="lvarazslattarto" layoutX="131.0" layoutY="629.0" onMouseExited="#hoverVarazslasbol" prefHeight="124.0" prefWidth="100.0">
          <children>
-            <Button fx:id="lvillamcsapas" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Villámcsapás" />
-            <Button fx:id="ltuzlabda" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Tűzlabda" />
-            <Button fx:id="lfeltamasztas" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Feltámasztás" />
-            <Button fx:id="lkotelbilincs" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="105.0" text="Kötélbilincs" />
-            <Button fx:id="lharcimamor" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
+            <Button fx:id="lvillamcsapas" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Villámcsapás" />
+            <Button fx:id="ltuzlabda" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Tűzlabda" />
+            <Button fx:id="lfeltamasztas" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Feltámasztás" />
+            <Button fx:id="lkotelbilincs" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="105.0" text="Kötélbilincs" />
+            <Button fx:id="lharcimamor" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
             <Button layoutX="10.0" layoutY="110.0" mnemonicParsing="false" onAction="#undoJeloles" prefHeight="25.0" prefWidth="100.0" text="Mégsem" />
          </children>
       </VBox>
-      <Label fx:id="details" alignment="CENTER" contentDisplay="CENTER" layoutX="262.0" layoutY="693.0" prefHeight="56.0" prefWidth="477.0" textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="details1" alignment="CENTER" contentDisplay="CENTER" layoutX="214.0" layoutY="757.0" prefHeight="25.0" prefWidth="573.0" textAlignment="CENTER" />
+      <Label fx:id="details" alignment="CENTER" contentDisplay="CENTER" layoutX="262.0" layoutY="663.0" prefHeight="74.0" prefWidth="477.0" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="details1" alignment="CENTER" contentDisplay="CENTER" layoutX="233.0" layoutY="737.0" prefHeight="40.0" prefWidth="535.0" textAlignment="CENTER" wrapText="true" />
       <Label fx:id="lmana" alignment="CENTER" layoutX="29.0" layoutY="497.0" prefHeight="17.0" prefWidth="71.0" text="x mana" textAlignment="CENTER" textFill="#5d17f2" />
       <Label fx:id="rmana" alignment="CENTER" layoutX="901.0" layoutY="497.0" prefHeight="17.0" prefWidth="71.0" text="x mana" textAlignment="CENTER" textFill="#5d17f2" />
       <VBox fx:id="lfeltamaszto" layoutX="40.0" layoutY="150.0" onMouseExited="#felelesztEltuntetese" prefHeight="242.0" prefWidth="50.0">
@@ -225,17 +225,19 @@
       </VBox>
       <VBox fx:id="rvarazslattarto" layoutX="771.0" layoutY="631.0" onMouseExited="#hoverVarazslasbol" prefHeight="124.0" prefWidth="100.0">
          <children>
-            <Button fx:id="rvillamcsapas" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Villámcsapás" />
-            <Button fx:id="rtuzlabda" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Tűzlabda" />
-            <Button fx:id="rfeltamasztas" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Feltámasztás" />
-            <Button fx:id="rkotelbilincs" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="105.0" text="Kötélbilincs" />
-            <Button fx:id="rharcimamor" mnemonicParsing="false" onAction="#spellCast" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
+            <Button fx:id="rvillamcsapas" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Villámcsapás" />
+            <Button fx:id="rtuzlabda" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Tűzlabda" />
+            <Button fx:id="rfeltamasztas" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="102.0" text="Feltámasztás" />
+            <Button fx:id="rkotelbilincs" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="105.0" text="Kötélbilincs" />
+            <Button fx:id="rharcimamor" mnemonicParsing="false" onAction="#spellCast" onMouseEntered="#hoverOnSpells" onMouseExited="#hoverOff" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
             <Button mnemonicParsing="false" onAction="#undoJeloles" prefHeight="25.0" prefWidth="100.0" text="Mégsem" />
          </children>
       </VBox>
       <Button fx:id="rvarakozas" layoutX="877.0" layoutY="603.0" mnemonicParsing="false" onAction="#rvarakozas" prefHeight="25.0" prefWidth="100.0" text="Várakozás" />
       <Button fx:id="rvarazslas" layoutX="877.0" layoutY="567.0" mnemonicParsing="false" onAction="#rvarazslas" prefHeight="25.0" prefWidth="100.0" text="Hős varázslás" />
       <Button fx:id="rtamadas" layoutX="877.0" layoutY="530.0" mnemonicParsing="false" onAction="#hosTamadas" prefHeight="25.0" prefWidth="100.0" text="Hős támadás" />
+      <Label fx:id="backattack" alignment="CENTER" contentDisplay="CENTER" layoutX="233.0" layoutY="774.0" prefHeight="25.0" prefWidth="535.0" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="spellStatus" alignment="TOP_RIGHT" layoutX="546.0" layoutY="13.0" prefHeight="91.0" prefWidth="444.0" text="Label" textAlignment="RIGHT" />
 
    </children>
 </AnchorPane>

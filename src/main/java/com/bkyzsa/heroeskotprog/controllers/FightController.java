@@ -1,12 +1,16 @@
 package com.bkyzsa.heroeskotprog.controllers;
 
-import com.bkyzsa.heroeskotprog.Application;
+import com.bkyzsa.heroeskotprog.Coords;
+import com.bkyzsa.heroeskotprog.Main;
 import com.bkyzsa.heroeskotprog.units.Egyseg;
 import com.bkyzsa.heroeskotprog.units.Hos;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Blend;
@@ -19,7 +23,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -100,6 +106,7 @@ public class FightController implements Initializable {
 
     static Blend p1szin;
     static Blend p2szin;
+    boolean visszatamadasKozel = false;
 
     @FXML
     static ImageView lfoldmuves;
@@ -150,9 +157,15 @@ public class FightController implements Initializable {
     @FXML
     VBox rvarazslattarto;
 
+    @FXML
+    Label spellStatus;
+
     Button[] lvarazslatok;
     Button[] rvarazslatok;
     ImageView[] felelesztos;
+
+    @FXML
+    Label backattack;
 
     int tuzX;
     int tuzY;
@@ -162,7 +175,7 @@ public class FightController implements Initializable {
     Egyseg[][] startMap;
 
     private int currentSorszam = -1;
-    private int maxSorszam;
+    private int maxSorszam; //idk sors
     private Egyseg[] currentsr;
 
     boolean hosTamad = false;
@@ -194,14 +207,14 @@ public class FightController implements Initializable {
         lvarazslatok = new Button[] {lvillamcsapas, ltuzlabda, lfeltamasztas, lkotelbilincs, lharcimamor};
         rvarazslatok = new Button[] {rvillamcsapas, rtuzlabda, rfeltamasztas, rkotelbilincs, rharcimamor};
 
-        for(int i = 0; i<rvarazslatok.length; i++) {
-                rvarazslatok[i].setDisable(true);
+        for (Button button : rvarazslatok) {
+            button.setDisable(true);
         }
             rvarazslattarto.setOpacity(0);
 
 
-        for(int i = 0; i<lvarazslatok.length; i++) {
-            lvarazslatok[i].setDisable(true);
+        for (Button button : lvarazslatok) {
+            button.setDisable(true);
         }
         lvarazslattarto.setOpacity(0);
 
@@ -231,19 +244,19 @@ public class FightController implements Initializable {
         //eltároljuk az eredetit hogy tudjunk felfele oszlopot játszani
 
 
-        lplayerUnits = new int[Application.gameData.lplayer.egysegek.length];
-        rplayerUnits = new int[Application.gameData.rplayer.egysegek.length];
+        lplayerUnits = new int[Main.gameData.lplayer.egysegek.length];
+        rplayerUnits = new int[Main.gameData.rplayer.egysegek.length];
         startMap = new Egyseg[10][12];
 
         for (int i = 0; i < 5; i++) {
-            int rakosGeci = Application.gameData.lplayer.egysegek[i].getDb(), anyad = Application.gameData.rplayer.egysegek[i].getDb();
+            int rakosGeci = Main.gameData.lplayer.egysegek[i].getDb(), anyad = Main.gameData.rplayer.egysegek[i].getDb();
             lplayerUnits[i] = rakosGeci;
             rplayerUnits[i] = anyad;
         }
 
         for(int i = 0; i < 10; i++) {
             for (int j = 0; j < 12; j++) {
-                startMap[i][j] = Application.gameData.map[i][j];
+                startMap[i][j] = Main.gameData.map[i][j];
             }
         }
 
@@ -258,7 +271,7 @@ public class FightController implements Initializable {
 
         lpley.setText("1. játékos");
         lpley.setTextFill(Color.web("BLUE"));
-        rpley.setText(Application.gameData.multiplayer ? "2. játékos" : "BOT játékos");
+        rpley.setText(Main.gameData.multiplayer ? "2. játékos" : "BOT játékos");
         rpley.setTextFill(Color.web("ORANGE"));
 
         for(Button a: lactions) {
@@ -267,6 +280,9 @@ public class FightController implements Initializable {
 
         for(Button a: ractions) {
             a.setDisable(true);
+            if(!Main.gameData.multiplayer) {
+                a.setOpacity(0);
+            }
         }
 
         hosimg = new Image("file:img/hos.jpg");
@@ -297,8 +313,8 @@ public class FightController implements Initializable {
         player1.setImage(hosimg);
         player2.setImage(hosimg);
 
-        lmana.setText(Application.gameData.lplayer.getMana() + " mana");
-        rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+        lmana.setText(Main.gameData.lplayer.getMana() + " mana");
+        rmana.setText(Main.gameData.rplayer.getMana() + " mana");
 
         kor.setText("1. kör");
 
@@ -308,14 +324,14 @@ public class FightController implements Initializable {
         magusImg.setImage(magus);
         saiyanImg.setImage(szupercsillagharcos);*/
 
-        Application.gameData.print();
+        Main.gameData.print();
 
         for(Node node: field.getChildren()) {
             if(node instanceof ImageView) {
-                for(Egyseg e : Application.gameData.lplayer.egysegek) {
+                for(Egyseg e : Main.gameData.lplayer.egysegek) {
                     if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && GridPane.getColumnIndex(node) < 2
-                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null
-                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(e.getNev())) {
+                            && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null
+                            && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(e.getNev())) {
 
                         ((ImageView)node).setImage(new Image("file:img/" + e.getNev() + ".png"));
                         node.setId("l" + e.getNev());
@@ -328,10 +344,10 @@ public class FightController implements Initializable {
 
         for(Node node: field.getChildren()) {
             if(node instanceof ImageView) {
-                for(Egyseg e : Application.gameData.rplayer.egysegek) {
+                for(Egyseg e : Main.gameData.rplayer.egysegek) {
                     if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null
-                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null && GridPane.getColumnIndex(node) > 9
-                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(e.getNev())) {
+                            && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null && GridPane.getColumnIndex(node) > 9
+                            && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(e.getNev())) {
 
                         ((ImageView)node).setImage(new Image("file:img/" + e.getNev() + ".png"));
                         node.setId("r" + e.getNev());
@@ -344,24 +360,39 @@ public class FightController implements Initializable {
 
         currentsr = handleSorrend(sorrendezo());
 
-        kovetkezo();
+        try {
+            kovetkezo();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+    }
+
+    @FXML
+    public void hoverOnSpells(MouseEvent event) {
+        switch(((Node)event.getSource()).getId()) {
+            case "lvillamcsapas", "rvillamcsapas" -> spellStatus.setText(Main.playerHos.elerhetoVarazslatok[0].toString() + "");
+            case "ltuzlabda", "rtuzlabda" -> spellStatus.setText(Main.playerHos.elerhetoVarazslatok[1].toString() + "");
+            case "lfeltamasztas", "rfeltamasztas" -> spellStatus.setText(Main.playerHos.elerhetoVarazslatok[2].toString() + "");
+            case "lkotelbilincs", "rkotelbilincs" -> spellStatus.setText(Main.playerHos.elerhetoVarazslatok[3].toString() + "");
+            case "lharcimamor", "rharcimamor" -> spellStatus.setText(Main.playerHos.elerhetoVarazslatok[4].toString() + "");
+        }
     }
 
     private Egyseg[] sorrendezo() {
         Egyseg[] tsorrendall = new Egyseg[10];
 
-        System.arraycopy(Application.gameData.lplayer.egysegek, 0, tsorrendall, 0, 5);
-        System.arraycopy(Application.gameData.rplayer.egysegek, 0, tsorrendall, 5, 5);
+        System.arraycopy(Main.gameData.lplayer.egysegek, 0, tsorrendall, 0, 5);
+        System.arraycopy(Main.gameData.rplayer.egysegek, 0, tsorrendall, 5, 5);
 
-        for(int i = 0; i < tsorrendall.length; i++) {
-            if(tsorrendall[i] != null) {
-                if(tsorrendall[i].getGazda() == Application.gameData.lplayer) {
-                    tsorrendall[i].setKezdemenyezes(tsorrendall[i].getKezdemenyezes() + Application.gameData.lplayer.getMoral());
+        for (Egyseg egyseg : tsorrendall) {
+            if (egyseg != null) {
+                if (egyseg.getGazda() == Main.gameData.lplayer) {
+                    egyseg.setKezdemenyezes(egyseg.getKezdemenyezes() + Main.gameData.lplayer.getMoral());
                     //System.out.println(tsorrendall[i].getNev() + tsorrendall[i].getKezdemenyezes());
                 }
-                if(tsorrendall[i].getGazda() == Application.gameData.rplayer) {
-                    tsorrendall[i].setKezdemenyezes(tsorrendall[i].getKezdemenyezes() + Application.gameData.rplayer.getMoral());
+                if (egyseg.getGazda() == Main.gameData.rplayer) {
+                    egyseg.setKezdemenyezes(egyseg.getKezdemenyezes() + Main.gameData.rplayer.getMoral());
                 }
             }
         }
@@ -440,7 +471,7 @@ public class FightController implements Initializable {
                     if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == i - currentSorszam && vegso[i].getDb() != 0) {
                         ((ImageView)node).setImage(new Image("file:img/" + vegso[i].getNev() + ".png"));
 
-                        if(vegso[i].getGazda() == Application.gameData.lplayer) {
+                        if(vegso[i].getGazda() == Main.gameData.lplayer) {
                             node.setEffect(p1szin);
                         }
                         else {
@@ -458,77 +489,77 @@ public class FightController implements Initializable {
 
         if(((ImageView)event.getSource()).getId() != null) {
             switch(((ImageView)event.getSource()).getId()) {
-                case "lfoldmuves" -> output = Application.gameData.lplayer.egysegek[0].getDb() + " db Földműves\nÉleterejük: "
-                        + Application.gameData.lplayer.egysegek[0].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.lplayer.egysegek[0].getOsszHp() / Application.gameData.lplayer.egysegek[0].getHp()) == Application.gameData.lplayer.egysegek[0].getDb()
-                        ? "mindenki, azaz " + Application.gameData.lplayer.egysegek[0].getDb() + " db sértetlen" : Application.gameData.lplayer.egysegek[0].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.lplayer.egysegek[0].getOsszHp() % Application.gameData.lplayer.egysegek[0].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.lplayer.egysegek[0].getSebzesinterval1() + "-" + Application.gameData.lplayer.egysegek[0].getSebzesinterval2();
+                case "lfoldmuves" -> output = Main.gameData.lplayer.egysegek[0].getDb() + " db Földműves\nÉleterejük: "
+                        + Main.gameData.lplayer.egysegek[0].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.lplayer.egysegek[0].getOsszHp() / Main.gameData.lplayer.egysegek[0].getHp()) == Main.gameData.lplayer.egysegek[0].getDb()
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[0].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[0].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.lplayer.egysegek[0].getOsszHp() % Main.gameData.lplayer.egysegek[0].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.lplayer.egysegek[0].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[0].getSebzesinterval2();
 
-                case "lijasz" -> output = Application.gameData.lplayer.egysegek[1].getDb() + " db Íjász\nÉleterejük: "
-                        + Application.gameData.lplayer.egysegek[1].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.lplayer.egysegek[1].getOsszHp() / Application.gameData.lplayer.egysegek[1].getHp()) == Application.gameData.lplayer.egysegek[1].getDb()
-                        ? "mindenki, azaz " + Application.gameData.lplayer.egysegek[1].getDb() + " db sértetlen" : Application.gameData.lplayer.egysegek[1].getDb() - 1+ " sértetlen, és egynek "
-                        + Application.gameData.lplayer.egysegek[1].getOsszHp() % Application.gameData.lplayer.egysegek[1].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.lplayer.egysegek[1].getSebzesinterval1() + "-" + Application.gameData.lplayer.egysegek[1].getSebzesinterval2();
-
-
-                case "lgriff" -> output = Application.gameData.lplayer.egysegek[2].getDb() + " db Griff\nÉleterejük: "
-                        + Application.gameData.lplayer.egysegek[2].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.lplayer.egysegek[2].getOsszHp() / Application.gameData.lplayer.egysegek[2].getHp()) == Application.gameData.lplayer.egysegek[2].getDb()
-                        ? "mindenki, azaz " + Application.gameData.lplayer.egysegek[2].getDb() + " db sértetlen" : Application.gameData.lplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek"
-                        + Application.gameData.lplayer.egysegek[2].getOsszHp() % Application.gameData.lplayer.egysegek[2].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.lplayer.egysegek[2].getSebzesinterval1() + "-" + Application.gameData.lplayer.egysegek[2].getSebzesinterval2();
-
-                case "lmagus" -> output = Application.gameData.lplayer.egysegek[3].getDb() + " db Mágus\nÉleterejük: "
-                        + Application.gameData.lplayer.egysegek[3].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.lplayer.egysegek[3].getOsszHp() / Application.gameData.lplayer.egysegek[3].getHp()) == Application.gameData.lplayer.egysegek[3].getDb()
-                        ? "mindenki, azaz " + Application.gameData.lplayer.egysegek[3].getDb() + " db sértetlen" : Application.gameData.lplayer.egysegek[3].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.lplayer.egysegek[3].getOsszHp() % Application.gameData.lplayer.egysegek[3].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.lplayer.egysegek[3].getSebzesinterval1() + "-" + Application.gameData.lplayer.egysegek[3].getSebzesinterval2();
-
-                case "lszupercsillagharcos" -> output = Application.gameData.lplayer.egysegek[4].getDb() + " db Szupercsillagharcos\nÉleterejük: "
-                        + Application.gameData.lplayer.egysegek[4].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.lplayer.egysegek[4].getOsszHp() / Application.gameData.lplayer.egysegek[4].getHp()) == Application.gameData.lplayer.egysegek[4].getDb()
-                        ? "mindenki, azaz " + Application.gameData.lplayer.egysegek[4].getDb() + " db sértetlen" : Application.gameData.lplayer.egysegek[4].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.lplayer.egysegek[4].getOsszHp() % Application.gameData.lplayer.egysegek[4].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.lplayer.egysegek[4].getSebzesinterval1() + "-" + Application.gameData.lplayer.egysegek[4].getSebzesinterval2();
+                case "lijasz" -> output = Main.gameData.lplayer.egysegek[1].getDb() + " db Íjász\nÉleterejük: "
+                        + Main.gameData.lplayer.egysegek[1].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.lplayer.egysegek[1].getOsszHp() / Main.gameData.lplayer.egysegek[1].getHp()) == Main.gameData.lplayer.egysegek[1].getDb()
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[1].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[1].getDb() - 1+ " sértetlen, és egynek "
+                        + Main.gameData.lplayer.egysegek[1].getOsszHp() % Main.gameData.lplayer.egysegek[1].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.lplayer.egysegek[1].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[1].getSebzesinterval2();
 
 
-                case "rfoldmuves" -> output = Application.gameData.rplayer.egysegek[0].getDb() + " db Földműves\nÉleterejük: "
-                        + Application.gameData.rplayer.egysegek[0].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.rplayer.egysegek[0].getOsszHp() / Application.gameData.rplayer.egysegek[0].getHp()) == Application.gameData.rplayer.egysegek[0].getDb()
-                        ? "mindenki, azaz " + Application.gameData.rplayer.egysegek[0].getDb() + " db sértetlen" : Application.gameData.rplayer.egysegek[0].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.rplayer.egysegek[0].getOsszHp() % Application.gameData.rplayer.egysegek[0].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.rplayer.egysegek[0].getSebzesinterval1() + "-" + Application.gameData.rplayer.egysegek[0].getSebzesinterval2();
+                case "lgriff" -> output = Main.gameData.lplayer.egysegek[2].getDb() + " db Griff\nÉleterejük: "
+                        + Main.gameData.lplayer.egysegek[2].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.lplayer.egysegek[2].getOsszHp() / Main.gameData.lplayer.egysegek[2].getHp()) == Main.gameData.lplayer.egysegek[2].getDb()
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[2].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek"
+                        + Main.gameData.lplayer.egysegek[2].getOsszHp() % Main.gameData.lplayer.egysegek[2].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.lplayer.egysegek[2].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[2].getSebzesinterval2();
 
-                case "rijasz" -> output = Application.gameData.rplayer.egysegek[1].getDb() + " db Íjász\nÉleterejük: "
-                        + Application.gameData.rplayer.egysegek[1].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.rplayer.egysegek[1].getOsszHp() / Application.gameData.rplayer.egysegek[1].getHp()) == Application.gameData.rplayer.egysegek[1].getDb()
-                        ? "mindenki, azaz " + Application.gameData.rplayer.egysegek[1].getDb() + " db sértetlen" : Application.gameData.rplayer.egysegek[1].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.rplayer.egysegek[1].getOsszHp() % Application.gameData.rplayer.egysegek[1].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.rplayer.egysegek[1].getSebzesinterval1() + "-" + Application.gameData.rplayer.egysegek[1].getSebzesinterval2();
+                case "lmagus" -> output = Main.gameData.lplayer.egysegek[3].getDb() + " db Mágus\nÉleterejük: "
+                        + Main.gameData.lplayer.egysegek[3].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.lplayer.egysegek[3].getOsszHp() / Main.gameData.lplayer.egysegek[3].getHp()) == Main.gameData.lplayer.egysegek[3].getDb()
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[3].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[3].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.lplayer.egysegek[3].getOsszHp() % Main.gameData.lplayer.egysegek[3].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.lplayer.egysegek[3].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[3].getSebzesinterval2();
 
-                case "rgriff" -> output = Application.gameData.rplayer.egysegek[2].getDb() + " db Griff\nÉleterejük: "
-                        + Application.gameData.rplayer.egysegek[2].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.rplayer.egysegek[2].getOsszHp() / Application.gameData.rplayer.egysegek[2].getHp()) == Application.gameData.rplayer.egysegek[2].getDb()
-                        ? "mindenki, azaz " + Application.gameData.rplayer.egysegek[2].getDb() + " db sértetlen" : Application.gameData.rplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.rplayer.egysegek[2].getOsszHp() % Application.gameData.rplayer.egysegek[2].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.rplayer.egysegek[2].getSebzesinterval1() + "-" + Application.gameData.rplayer.egysegek[2].getSebzesinterval2();
+                case "lszupercsillagharcos" -> output = Main.gameData.lplayer.egysegek[4].getDb() + " db Szupercsillagharcos\nÉleterejük: "
+                        + Main.gameData.lplayer.egysegek[4].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.lplayer.egysegek[4].getOsszHp() / Main.gameData.lplayer.egysegek[4].getHp()) == Main.gameData.lplayer.egysegek[4].getDb()
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[4].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[4].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.lplayer.egysegek[4].getOsszHp() % Main.gameData.lplayer.egysegek[4].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.lplayer.egysegek[4].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[4].getSebzesinterval2();
 
-                case "rmagus" -> output = Application.gameData.rplayer.egysegek[3].getDb() + " db Mágus\nÉleterejük: "
-                        + Application.gameData.rplayer.egysegek[3].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.rplayer.egysegek[3].getOsszHp() / Application.gameData.rplayer.egysegek[3].getHp()) == Application.gameData.rplayer.egysegek[3].getDb()
-                        ? "mindenki, azaz " + Application.gameData.rplayer.egysegek[3].getDb() + " db sértetlen" : Application.gameData.rplayer.egysegek[3].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.rplayer.egysegek[3].getOsszHp() % Application.gameData.rplayer.egysegek[3].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.rplayer.egysegek[3].getSebzesinterval1() + "-" + Application.gameData.rplayer.egysegek[3].getSebzesinterval2();
 
-                case "rszupercsillagharcos" -> output = Application.gameData.rplayer.egysegek[4].getDb() + " db Szupercsillagharcos\nÉleterejük: "
-                        + Application.gameData.rplayer.egysegek[4].getOsszHp() + ", ebből "
-                        +  ((Application.gameData.rplayer.egysegek[4].getOsszHp() / Application.gameData.rplayer.egysegek[4].getHp()) == Application.gameData.rplayer.egysegek[4].getDb()
-                        ? "mindenki, azaz " + Application.gameData.rplayer.egysegek[4].getDb() + " db sértetlen" : Application.gameData.rplayer.egysegek[4].getDb() - 1 + " sértetlen, és egynek "
-                        + Application.gameData.rplayer.egysegek[4].getOsszHp() % Application.gameData.rplayer.egysegek[4].getHp() + " életereje van")
-                        + "\nSebzés: " + Application.gameData.rplayer.egysegek[4].getSebzesinterval1() + "-" + Application.gameData.rplayer.egysegek[4].getSebzesinterval2();
+                case "rfoldmuves" -> output = Main.gameData.rplayer.egysegek[0].getDb() + " db Földműves\nÉleterejük: "
+                        + Main.gameData.rplayer.egysegek[0].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.rplayer.egysegek[0].getOsszHp() / Main.gameData.rplayer.egysegek[0].getHp()) == Main.gameData.rplayer.egysegek[0].getDb()
+                        ? "mindenki, azaz " + Main.gameData.rplayer.egysegek[0].getDb() + " db sértetlen" : Main.gameData.rplayer.egysegek[0].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.rplayer.egysegek[0].getOsszHp() % Main.gameData.rplayer.egysegek[0].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.rplayer.egysegek[0].getSebzesinterval1() + "-" + Main.gameData.rplayer.egysegek[0].getSebzesinterval2();
+
+                case "rijasz" -> output = Main.gameData.rplayer.egysegek[1].getDb() + " db Íjász\nÉleterejük: "
+                        + Main.gameData.rplayer.egysegek[1].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.rplayer.egysegek[1].getOsszHp() / Main.gameData.rplayer.egysegek[1].getHp()) == Main.gameData.rplayer.egysegek[1].getDb()
+                        ? "mindenki, azaz " + Main.gameData.rplayer.egysegek[1].getDb() + " db sértetlen" : Main.gameData.rplayer.egysegek[1].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.rplayer.egysegek[1].getOsszHp() % Main.gameData.rplayer.egysegek[1].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.rplayer.egysegek[1].getSebzesinterval1() + "-" + Main.gameData.rplayer.egysegek[1].getSebzesinterval2();
+
+                case "rgriff" -> output = Main.gameData.rplayer.egysegek[2].getDb() + " db Griff\nÉleterejük: "
+                        + Main.gameData.rplayer.egysegek[2].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.rplayer.egysegek[2].getOsszHp() / Main.gameData.rplayer.egysegek[2].getHp()) == Main.gameData.rplayer.egysegek[2].getDb()
+                        ? "mindenki, azaz " + Main.gameData.rplayer.egysegek[2].getDb() + " db sértetlen" : Main.gameData.rplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.rplayer.egysegek[2].getOsszHp() % Main.gameData.rplayer.egysegek[2].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.rplayer.egysegek[2].getSebzesinterval1() + "-" + Main.gameData.rplayer.egysegek[2].getSebzesinterval2();
+
+                case "rmagus" -> output = Main.gameData.rplayer.egysegek[3].getDb() + " db Mágus\nÉleterejük: "
+                        + Main.gameData.rplayer.egysegek[3].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.rplayer.egysegek[3].getOsszHp() / Main.gameData.rplayer.egysegek[3].getHp()) == Main.gameData.rplayer.egysegek[3].getDb()
+                        ? "mindenki, azaz " + Main.gameData.rplayer.egysegek[3].getDb() + " db sértetlen" : Main.gameData.rplayer.egysegek[3].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.rplayer.egysegek[3].getOsszHp() % Main.gameData.rplayer.egysegek[3].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.rplayer.egysegek[3].getSebzesinterval1() + "-" + Main.gameData.rplayer.egysegek[3].getSebzesinterval2();
+
+                case "rszupercsillagharcos" -> output = Main.gameData.rplayer.egysegek[4].getDb() + " db Szupercsillagharcos\nÉleterejük: "
+                        + Main.gameData.rplayer.egysegek[4].getOsszHp() + ", ebből "
+                        +  ((Main.gameData.rplayer.egysegek[4].getOsszHp() / Main.gameData.rplayer.egysegek[4].getHp()) == Main.gameData.rplayer.egysegek[4].getDb()
+                        ? "mindenki, azaz " + Main.gameData.rplayer.egysegek[4].getDb() + " db sértetlen" : Main.gameData.rplayer.egysegek[4].getDb() - 1 + " sértetlen, és egynek "
+                        + Main.gameData.rplayer.egysegek[4].getOsszHp() % Main.gameData.rplayer.egysegek[4].getHp() + " életereje van")
+                        + "\nSebzés: " + Main.gameData.rplayer.egysegek[4].getSebzesinterval1() + "-" + Main.gameData.rplayer.egysegek[4].getSebzesinterval2();
 
                 default -> output = "";
             }
@@ -546,7 +577,7 @@ public class FightController implements Initializable {
         for(Node node : field.getChildren()) {
             for(int i = 0; i < 10; i++) {
                 for (int j = 0; j < 12; j++) {
-                    if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() != Application.gameData.pakol) {
+                    if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() != Main.gameData.pakol) {
                         if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
                                 GridPane.getRowIndex(node) == i && GridPane.getColumnIndex(node) == j) {
                             node.setEffect(tamadhato);
@@ -569,7 +600,6 @@ public class FightController implements Initializable {
         //ott ugye a kovetkezo sorszamu unit tamad, mert ahelyett tamadt a hos i guess, szoval azt is le kell kezelni
     }
 
-    //TODO befejezés
     @FXML
     public void spellCast(ActionEvent event) {
 
@@ -615,7 +645,7 @@ public class FightController implements Initializable {
             for(Node node : field.getChildren()) {
                 for(int i = 0; i < 10; i++) {
                     for (int j = 0; j < 12; j++) {
-                        if(node instanceof ImageView && Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() != Application.gameData.pakol) {
+                        if(node instanceof ImageView && Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() != Main.gameData.pakol) {
                             if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
                                     GridPane.getRowIndex(node) == i && GridPane.getColumnIndex(node) == j) {
                                 node.setEffect(tamadhato);
@@ -649,7 +679,7 @@ public class FightController implements Initializable {
             }
         }
         if(feltamasztasTamad) {
-            Hos caster = Application.gameData.pakol;
+            Hos caster = Main.gameData.pakol;
 
             System.out.println("bejottem feltamasztani");
 
@@ -657,9 +687,9 @@ public class FightController implements Initializable {
             lfeltamaszto.setDisable(false);
 
             //menjunk vegig az unitokon es nezzuk melyik halott, eltarolas jokerdes
-            if(caster == Application.gameData.lplayer) {
+            if(caster == Main.gameData.lplayer) {
                 for(int i = 0; i < caster.egysegek.length; i++) {
-                    if(caster.egysegek[i].getDb() == 0 && lplayerUnits[i] != 0) {
+                    if(caster.egysegek[i].getOsszHp() < lplayerUnits[i] * caster.egysegek[i].getHp() /*&& lplayerUnits[i] != 0*/) {
                         for(Node node : lfeltamaszto.getChildren()) {
                             if(node instanceof ImageView) {
                                 System.out.println(caster.egysegek[i].getNev() + "Img");
@@ -671,9 +701,10 @@ public class FightController implements Initializable {
                         }
                     }
                 }
-            }else if(caster == Application.gameData.rplayer) {
+            }
+            else if(caster == Main.gameData.rplayer) {
                 for(int i = 0; i < caster.egysegek.length; i++) {
-                    if(caster.egysegek[i].getDb() == 0 && rplayerUnits[i] != 0) {
+                    if(caster.egysegek[i].getOsszHp() < rplayerUnits[i] * caster.egysegek[i].getHp()) {
                         for(Node node : lfeltamaszto.getChildren()) {
                             if(node instanceof ImageView) {
                                 System.out.println(caster.egysegek[i].getNev() + "Img");
@@ -693,7 +724,7 @@ public class FightController implements Initializable {
             for(Node node : field.getChildren()) {
                 for(int i = 0; i < 10; i++) {
                     for (int j = 0; j < 12; j++) {
-                        if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() != Application.gameData.pakol) {
+                        if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() != Main.gameData.pakol) {
                             if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
                                     GridPane.getRowIndex(node) == i && GridPane.getColumnIndex(node) == j) {
                                 node.setEffect(tamadhato);
@@ -708,16 +739,16 @@ public class FightController implements Initializable {
         if(harcimamorTamad) {
             for(int i = 0; i < 10; i++) {
                 for (int j = 0; j < 12; j++) {
-                    if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() == Application.gameData.pakol) {
-                        Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() + (Application.gameData.pakol.getVarazsero() * 2));
-                        Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() + (Application.gameData.pakol.getVarazsero() * 2));
+                    if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() == Main.gameData.pakol) {
+                        Main.gameData.map[i][j].setSebzesinterval1(Main.gameData.map[i][j].getSebzesinterval1() + (Main.gameData.pakol.getVarazsero() * 2));
+                        Main.gameData.map[i][j].setSebzesinterval2(Main.gameData.map[i][j].getSebzesinterval2() + (Main.gameData.pakol.getVarazsero() * 2));
 
-                        System.out.println(Application.gameData.map[i][j].getSebzesinterval1() + "-" + Application.gameData.map[i][j].getSebzesinterval2());
+                        System.out.println(Main.gameData.map[i][j].getSebzesinterval1() + "-" + Main.gameData.map[i][j].getSebzesinterval2());
 
 
                         harcimamorTamad = true;
-                        Application.gameData.pakol.setHarciMamorAktiv(true);
-                        details1.setText((Application.gameData.pakol == Application.gameData.lplayer ? "< " : "") + "A harci mámor ebben a körben aktiválva lett." + (Application.gameData.pakol == Application.gameData.rplayer ? " >" : ""));
+                        Main.gameData.pakol.setHarciMamorAktiv(true);
+                        details1.setText((Main.gameData.pakol == Main.gameData.lplayer ? "< " : "") + "A harci mámor ebben a körben aktiválva lett." + (Main.gameData.pakol == Main.gameData.rplayer ? " >" : ""));
                     }
                 }
             }
@@ -728,7 +759,6 @@ public class FightController implements Initializable {
     public void undoJeloles(ActionEvent event) {
         for(Node node : field.getChildren()) {
             if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && node.getEffect() != valasztott) {
-                System.out.println("AAAAAAAAAAAAAAA");
                 node.setEffect(null);
 
                 if(tuzlabdaTamad) {
@@ -755,7 +785,6 @@ public class FightController implements Initializable {
         feltamasztasTamad = false;
     }
 
-
     private void jelolesTorlese() {
         for (Node node : field.getChildren()) {
             //lepheto mezok
@@ -770,188 +799,264 @@ public class FightController implements Initializable {
     }
 
     @FXML
-    public void feleleszt(MouseEvent event) {
+    public void feleleszt(MouseEvent event) throws IOException {
         //töröljük a csöves jelöléseket
         jelolesTorlese();
 
 
         //ha rakattintasz akkor legyen halott ez pl ellenorizheto opacitasbol like a boss
         if(((Node)event.getSource()).getOpacity() == 1) {
-            if(Application.gameData.pakol.getMana() < Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost()) {
+            if(Main.gameData.pakol.getMana() < Main.gameData.pakol.elerhetoVarazslatok[2].getManaCost()) {
                 info.setText("Túl kevés mana a varázsláshoz!");
+                feltamasztasTamad = false;
+                currentSorszam--;
+
+                kovetkezo();
+
                 return;
             }
             else {
-                Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
-                lmana.setText(Application.gameData.pakol.getMana() + " mana");
+                Main.gameData.pakol.setMana(Main.gameData.pakol.getMana() - Main.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
+                lmana.setText(Main.gameData.pakol.getMana() + " mana");
             }
 
             int col = 0;
-            if(Application.gameData.pakol == Application.gameData.lplayer) {
-                col = 0;
-            }
-            else {
+            if(Main.gameData.pakol == Main.gameData.rplayer) {
                 col = 11;
             }
             //mire nyomtál
             switch(((Node)event.getSource()).getId()) {
                 case "foldmuvesImg" -> {
-                    if(Application.gameData.pakol == Application.gameData.lplayer) {
-                        Application.gameData.pakol.egysegek[0].setDb(lplayerUnits[0]);
+                    int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
+                    int baseHp = Main.gameData.pakol.egysegek[0].getHp() * Main.gameData.pakol.egysegek[0].getDb();
+                    boolean halott = false;
+                    if(Main.gameData.pakol.egysegek[0].getOsszHp() == 0) {
+                        halott = true;
                     }
-                    else {
-                        Application.gameData.pakol.egysegek[0].setDb(rplayerUnits[0]);
+
+                    if(halott) {
+                        Main.gameData.pakol.egysegek[0].setOsszHp(Math.min(maxHeal, baseHp));
+                        boolean vanserult = Main.gameData.pakol.egysegek[0].getOsszHp() % Main.gameData.pakol.egysegek[0].getHp() != 0;
+                        Main.gameData.pakol.egysegek[0].setDb(Main.gameData.pakol.egysegek[0].getOsszHp() / Main.gameData.pakol.egysegek[0].getHp() + (vanserult ? 1 : 0));
+                        details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[0].getOsszHp());
+                    } else {
+                        int hianyzo = 0;
+                        if(Main.gameData.pakol == Main.gameData.lplayer) {
+                            hianyzo = Main.gameData.pakol.egysegek[0].getHp() * lplayerUnits[0] - Main.gameData.pakol.egysegek[0].getOsszHp();
+                            if(hianyzo > maxHeal)
+                                hianyzo = maxHeal;
+                        }
+                        else {
+                            hianyzo = Main.gameData.pakol.egysegek[0].getHp() * rplayerUnits[0] - Main.gameData.pakol.egysegek[0].getOsszHp();
+                            if(hianyzo > maxHeal)
+                                hianyzo = maxHeal;
+                        }
+
+                        Main.gameData.pakol.egysegek[0].setOsszHp(Main.gameData.pakol.egysegek[0].getOsszHp() + hianyzo);
+                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[0].getOsszHp());
                     }
+                    if(halott) {
+                        for(Node node : field.getChildren()) {
+                            if(node instanceof ImageView) {
+                                if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
+                                        && node.getId() == null) {
+                                    //rakd le ezt a SZART
+                                    ((ImageView)node).setImage(foldmuves);
+                                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                                        node.setId("l" + Main.gameData.pakol.egysegek[0].getNev());
+                                    }
+                                    else {
+                                        node.setId("r" + Main.gameData.pakol.egysegek[0].getNev());
+                                    }
 
-                    int maxHeal = Application.gameData.pakol.getVarazsero() * 50;
-                    int baseHp = Application.gameData.pakol.egysegek[0].getHp() * Application.gameData.pakol.egysegek[0].getDb();
-                    Application.gameData.pakol.egysegek[0].setOsszHp(Math.min(maxHeal, baseHp));
-                    for(Node node : field.getChildren()) {
-                        if(node instanceof ImageView) {
-                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
-                            && node.getId() == null) {
-                                //rakd le ezt a SZART
-                                ((ImageView)node).setImage(foldmuves);
-                                if(Application.gameData.pakol == Application.gameData.lplayer) {
-                                    node.setId("l" + Application.gameData.pakol.egysegek[0].getNev());
+
+                                    //most a mapra
+                                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[0];
+                                    break;
+
                                 }
-                                else {
-                                    node.setId("r" + Application.gameData.pakol.egysegek[0].getNev());
-                                }
-
-
-                                //most a mapra
-                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.pakol.egysegek[0];
-                                break;
-
                             }
                         }
                     }
                 }
                 case "ijaszImg" -> {
-                    if(Application.gameData.pakol == Application.gameData.lplayer) {
-                        Application.gameData.pakol.egysegek[1].setDb(lplayerUnits[1]);
+                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                        Main.gameData.pakol.egysegek[1].setDb(lplayerUnits[1]);
                     }
                     else {
-                        Application.gameData.pakol.egysegek[1].setDb(rplayerUnits[1]);
+                        Main.gameData.pakol.egysegek[1].setDb(rplayerUnits[1]);
                     }
-                    int maxHeal = Application.gameData.pakol.getVarazsero() * 50;
-                    int baseHp = Application.gameData.pakol.egysegek[1].getHp() * Application.gameData.pakol.egysegek[1].getDb();
-                    Application.gameData.pakol.egysegek[1].setOsszHp(Math.min(maxHeal, baseHp));
-                    for(Node node : field.getChildren()) {
-                        if(node instanceof ImageView) {
-                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
-                                    && node.getId() == null) {
-                                //rakd le ezt a SZART
-                                ((ImageView)node).setImage(foldmuves);
-                                if(Application.gameData.pakol == Application.gameData.lplayer) {
-                                    node.setId("l" + Application.gameData.pakol.egysegek[1].getNev());
+                    int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
+                    int baseHp = Main.gameData.pakol.egysegek[1].getHp() * Main.gameData.pakol.egysegek[1].getDb();
+                    boolean halott = false;
+                    if(Main.gameData.pakol.egysegek[1].getOsszHp() == 0) {
+                        halott = true;
+                    }
+
+                    if(halott) {
+                        Main.gameData.pakol.egysegek[1].setOsszHp(Math.min(maxHeal, baseHp));
+                        details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[1].getOsszHp());
+                    } else {
+                        int hianyzo = Main.gameData.pakol.egysegek[1].getHp() * Main.gameData.pakol.egysegek[1].getDb() - Main.gameData.pakol.egysegek[1].getOsszHp();
+                        Main.gameData.pakol.egysegek[1].setOsszHp(Main.gameData.pakol.egysegek[1].getOsszHp() + hianyzo);
+                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[1].getOsszHp());
+                    }
+                    if(halott) {
+                        for(Node node : field.getChildren()) {
+                            if(node instanceof ImageView) {
+                                if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
+                                        && node.getId() == null) {
+                                    //rakd le ezt a SZART
+                                    ((ImageView)node).setImage(foldmuves);
+                                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                                        node.setId("l" + Main.gameData.pakol.egysegek[1].getNev());
+                                    }
+                                    else {
+                                        node.setId("r" + Main.gameData.pakol.egysegek[1].getNev());
+                                    }
+
+
+                                    //most a mapra
+                                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[1];
+                                    break;
+
                                 }
-                                else {
-                                    node.setId("r" + Application.gameData.pakol.egysegek[1].getNev());
-                                }
-
-
-                                //most a mapra
-                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.pakol.egysegek[1];
-                                break;
-
                             }
                         }
                     }
+
                 }
                 case "griffImg" -> {
-                    if(Application.gameData.pakol == Application.gameData.lplayer) {
-                        Application.gameData.pakol.egysegek[2].setDb(lplayerUnits[2]);
+                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                        Main.gameData.pakol.egysegek[2].setDb(lplayerUnits[2]);
                     }
                     else {
-                        Application.gameData.pakol.egysegek[2].setDb(rplayerUnits[2]);
+                        Main.gameData.pakol.egysegek[2].setDb(rplayerUnits[2]);
                     }
-                    int maxHeal = Application.gameData.pakol.getVarazsero() * 50;
-                    int baseHp = Application.gameData.pakol.egysegek[2].getHp() * Application.gameData.pakol.egysegek[2].getDb();
-                    Application.gameData.pakol.egysegek[2].setOsszHp(Math.min(maxHeal, baseHp));
-                    for(Node node : field.getChildren()) {
-                        if(node instanceof ImageView) {
-                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
-                                    && node.getId() == null) {
-                                //rakd le ezt a SZART
-                                ((ImageView)node).setImage(foldmuves);
-                                if(Application.gameData.pakol == Application.gameData.lplayer) {
-                                    node.setId("l" + Application.gameData.pakol.egysegek[2].getNev());
+                    int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
+                    int baseHp = Main.gameData.pakol.egysegek[2].getHp() * Main.gameData.pakol.egysegek[2].getDb();
+                    boolean halott = false;
+                    if(Main.gameData.pakol.egysegek[2].getOsszHp() == 0) {
+                        halott = true;
+                    }
+
+                    if(halott) {
+                        Main.gameData.pakol.egysegek[2].setOsszHp(Math.min(maxHeal, baseHp));
+                        details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[2].getOsszHp());
+                    } else {
+                        int hianyzo = Main.gameData.pakol.egysegek[2].getHp() * Main.gameData.pakol.egysegek[2].getDb() - Main.gameData.pakol.egysegek[2].getOsszHp();
+                        Main.gameData.pakol.egysegek[2].setOsszHp(Main.gameData.pakol.egysegek[2].getOsszHp() + hianyzo);
+                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[2].getOsszHp());
+                    }
+                    if(halott) {
+                        for(Node node : field.getChildren()) {
+                            if(node instanceof ImageView) {
+                                if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
+                                        && node.getId() == null) {
+                                    //rakd le ezt a SZART
+                                    ((ImageView)node).setImage(foldmuves);
+                                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                                        node.setId("l" + Main.gameData.pakol.egysegek[2].getNev());
+                                    }
+                                    else {
+                                        node.setId("r" + Main.gameData.pakol.egysegek[2].getNev());
+                                    }
+
+
+                                    //most a mapra
+                                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[2];
+                                    break;
+
                                 }
-                                else {
-                                    node.setId("r" + Application.gameData.pakol.egysegek[2].getNev());
-                                }
-
-
-                                //most a mapra
-                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.pakol.egysegek[2];
-                                break;
-
                             }
                         }
                     }
                 }
                 case "magusImg" -> {
-                    if(Application.gameData.pakol == Application.gameData.lplayer) {
-                        Application.gameData.pakol.egysegek[3].setDb(lplayerUnits[3]);
+                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                        Main.gameData.pakol.egysegek[3].setDb(lplayerUnits[3]);
                     }
                     else {
-                        Application.gameData.pakol.egysegek[3].setDb(rplayerUnits[3]);
+                        Main.gameData.pakol.egysegek[3].setDb(rplayerUnits[3]);
                     }
-                    int maxHeal = Application.gameData.pakol.getVarazsero() * 50;
-                    int baseHp = Application.gameData.pakol.egysegek[3].getHp() * Application.gameData.pakol.egysegek[1].getDb();
-                    Application.gameData.pakol.egysegek[3].setOsszHp(Math.min(maxHeal, baseHp));
-                    for(Node node : field.getChildren()) {
-                        if(node instanceof ImageView) {
-                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
-                                    && node.getId() == null) {
-                                //rakd le ezt a SZART
-                                ((ImageView)node).setImage(foldmuves);
-                                if(Application.gameData.pakol == Application.gameData.lplayer) {
-                                    node.setId("l" + Application.gameData.pakol.egysegek[3].getNev());
+                    int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
+                    int baseHp = Main.gameData.pakol.egysegek[3].getHp() * Main.gameData.pakol.egysegek[3].getDb();
+                    boolean halott = false;
+                    if(Main.gameData.pakol.egysegek[3].getOsszHp() == 0) {
+                        halott = true;
+                    }
+
+                    if(halott) {
+                        Main.gameData.pakol.egysegek[3].setOsszHp(Math.min(maxHeal, baseHp));
+                        details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[3].getOsszHp());
+                    } else {
+                        int hianyzo = Main.gameData.pakol.egysegek[3].getHp() * Main.gameData.pakol.egysegek[3].getDb() - Main.gameData.pakol.egysegek[3].getOsszHp();
+                        Main.gameData.pakol.egysegek[3].setOsszHp(Main.gameData.pakol.egysegek[3].getOsszHp() + hianyzo);
+                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[3].getOsszHp());
+                    }
+                    if(halott) {
+                        for(Node node : field.getChildren()) {
+                            if(node instanceof ImageView) {
+                                if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
+                                        && node.getId() == null) {
+                                    //rakd le ezt a SZART
+                                    ((ImageView)node).setImage(foldmuves);
+                                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                                        node.setId("l" + Main.gameData.pakol.egysegek[3].getNev());
+                                    }
+                                    else {
+                                        node.setId("r" + Main.gameData.pakol.egysegek[3].getNev());
+                                    }
+
+
+                                    //most a mapra
+                                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[3];
+                                    break;
+
                                 }
-                                else {
-                                    node.setId("r" + Application.gameData.pakol.egysegek[3].getNev());
-                                }
-
-
-                                //most a mapra
-                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.pakol.egysegek[3];
-                                break;
-
                             }
                         }
                     }
                 }
                 case "saiyanImg" -> {
-                    if(Application.gameData.pakol == Application.gameData.lplayer) {
-                        Application.gameData.pakol.egysegek[4].setDb(lplayerUnits[4]);
+                    if (Main.gameData.pakol == Main.gameData.lplayer) {
+                        Main.gameData.pakol.egysegek[4].setDb(lplayerUnits[4]);
+                    } else {
+                        Main.gameData.pakol.egysegek[4].setDb(rplayerUnits[4]);
                     }
-                    else {
-                        Application.gameData.pakol.egysegek[4].setDb(rplayerUnits[4]);
+                    int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
+                    int baseHp = Main.gameData.pakol.egysegek[4].getHp() * Main.gameData.pakol.egysegek[4].getDb();
+                    boolean halott = false;
+                    if (Main.gameData.pakol.egysegek[4].getOsszHp() == 0) {
+                        halott = true;
                     }
-                    int maxHeal = Application.gameData.pakol.getVarazsero() * 50;
-                    int baseHp = Application.gameData.pakol.egysegek[4].getHp() * Application.gameData.pakol.egysegek[4].getDb();
-                    Application.gameData.pakol.egysegek[4].setOsszHp(Math.min(maxHeal, baseHp));
-                    for(Node node : field.getChildren()) {
-                        if(node instanceof ImageView) {
-                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
-                                    && node.getId() == null) {
-                                //rakd le ezt a SZART
-                                ((ImageView)node).setImage(foldmuves);
-                                if(Application.gameData.pakol == Application.gameData.lplayer) {
-                                    node.setId("l" + Application.gameData.pakol.egysegek[4].getNev());
+
+                    if (halott) {
+                        Main.gameData.pakol.egysegek[4].setOsszHp(Math.min(maxHeal, baseHp));
+                        details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[4].getOsszHp());
+                    } else {
+                        int hianyzo = Main.gameData.pakol.egysegek[4].getHp() * Main.gameData.pakol.egysegek[4].getDb() - Main.gameData.pakol.egysegek[4].getOsszHp();
+                        Main.gameData.pakol.egysegek[1].setOsszHp(Main.gameData.pakol.egysegek[4].getOsszHp() + hianyzo);
+                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[4].getOsszHp());
+                    }
+                    if (halott) {
+                        for (Node node : field.getChildren()) {
+                            if (node instanceof ImageView) {
+                                if (GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == col
+                                        && node.getId() == null) {
+                                    //rakd le ezt a SZART
+                                    ((ImageView) node).setImage(foldmuves);
+                                    if (Main.gameData.pakol == Main.gameData.lplayer) {
+                                        node.setId("l" + Main.gameData.pakol.egysegek[4].getNev());
+                                    } else {
+                                        node.setId("r" + Main.gameData.pakol.egysegek[4].getNev());
+                                    }
+
+                                    //most a mapra
+                                    Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[4];
+                                    break;
+
                                 }
-                                else {
-                                    node.setId("r" + Application.gameData.pakol.egysegek[4].getNev());
-                                }
-
-
-                                //most a mapra
-                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.pakol.egysegek[4];
-                                break;
-
                             }
                         }
                     }
@@ -978,11 +1083,12 @@ public class FightController implements Initializable {
     @FXML
     public void hoverOff(MouseEvent event) {
         details.setText("");
+        spellStatus.setText("");
     }
 
     @FXML
-    public void lvarakozas(ActionEvent event) {
-        if(Application.gameData.pakol == Application.gameData.lplayer) {
+    public void lvarakozas(ActionEvent event) throws IOException {
+        if(Main.gameData.pakol == Main.gameData.lplayer) {
             for(Node node : field.getChildren()) {
 
                 if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
@@ -1003,8 +1109,8 @@ public class FightController implements Initializable {
         }
 
     }
-    public void rvarakozas(ActionEvent event) {
-        if(Application.gameData.pakol == Application.gameData.rplayer) {
+    public void rvarakozas(ActionEvent event) throws IOException {
+        if(Main.gameData.pakol == Main.gameData.rplayer) {
             for(Node node : field.getChildren()) {
 
                 if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
@@ -1030,7 +1136,7 @@ public class FightController implements Initializable {
     public void lvarazslas(ActionEvent event) {
         lvarazslattarto.setOpacity(1);
         for(int i = 0; i<lvarazslatok.length; i++) {
-            if(Application.gameData.lplayer.elerhetoVarazslatok[i].isVan()) {
+            if(Main.gameData.lplayer.elerhetoVarazslatok[i].isVan()) {
                 lvarazslatok[i].setDisable(false);
             }
         }
@@ -1039,7 +1145,7 @@ public class FightController implements Initializable {
     public void rvarazslas(ActionEvent event) {
         rvarazslattarto.setOpacity(1);
         for(int i = 0; i<rvarazslatok.length; i++) {
-            if(Application.gameData.rplayer.elerhetoVarazslatok[i].isVan()) {
+            if(Main.gameData.rplayer.elerhetoVarazslatok[i].isVan()) {
                 rvarazslatok[i].setDisable(false);
             }
         }
@@ -1057,7 +1163,66 @@ public class FightController implements Initializable {
         }
     }
 
-    private void kovetkezo() {
+    private void aiLepkedo() {
+
+        //van egy mostani cucca, amivel kéne mozogni
+        List<Egyseg> enemies = new ArrayList<>();
+
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 12; j++) {
+                if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() != Main.gameData.rplayer) {
+                    enemies.add(Main.gameData.map[i][j]);
+
+
+                }
+            }
+        }
+
+
+
+
+    }
+    //goat algoritmus
+    private Set<Coords> dijkstra(Coords coord, int sebesseg) {
+        Set<Coords> queue = new HashSet<>();
+        int pos = 0;
+
+        queue.add(coord);
+        while(sebesseg > pos) {
+            queue = szomszedok(queue);
+            pos++;
+        }
+
+        return queue;
+    }
+
+    public Set<Coords> szomszedok(Set<Coords> set) {
+        Set<Coords> var = new HashSet<>();
+
+        for (Coords c : set) {
+            if (Main.gameData.map[c.row][Math.min(c.col + 1, 11)] == null) {
+                var.add(new Coords(c.row, Math.min(c.col + 1, 11)));
+            }
+            if (Main.gameData.map[c.row][Math.max(0, c.col - 1)] == null) {
+                var.add(new Coords(c.row, Math.max(0, c.col - 1)));
+            }
+            if (Main.gameData.map[Math.min(c.row + 1, 9)][c.col] == null) {
+                var.add(new Coords(Math.min(c.row + 1, 9), c.col));
+            }
+            if (Main.gameData.map[Math.max(0, c.row - 1)][c.col] == null) {
+                var.add(new Coords(Math.max(0, c.row - 1), c.col));
+            }
+
+        }
+
+        var.addAll(set);
+        return var;
+    }
+
+
+
+
+    private void kovetkezo() throws IOException {
         Egyseg elozo = null;
         if(currentSorszam > -1) {
             elozo = currentsr[currentSorszam];
@@ -1075,7 +1240,7 @@ public class FightController implements Initializable {
 
         if(currentSorszam == currentsr.length) {
             currentSorszam = 0;
-            kor.setText(++Application.gameData.kor + ". kör");
+            kor.setText(++Main.gameData.kor + ". kör");
 
             for(Egyseg e : currentsr) {
                 if(e != null)
@@ -1083,31 +1248,31 @@ public class FightController implements Initializable {
             }
 
             //region harcimámor kikapcsolás
-            if(Application.gameData.lplayer.isHarciMamorAktiv()) {
+            if(Main.gameData.lplayer.isHarciMamorAktiv()) {
                 for(int i = 0; i < 10; i++) {
                     for (int j = 0; j < 12; j++) {
-                        if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() == Application.gameData.lplayer) {
-                            Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() - Application.gameData.lplayer.getVarazsero() * 2);
-                            Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() - Application.gameData.lplayer.getVarazsero() * 2);
+                        if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() == Main.gameData.lplayer) {
+                            Main.gameData.map[i][j].setSebzesinterval1(Main.gameData.map[i][j].getSebzesinterval1() - Main.gameData.lplayer.getVarazsero() * 2);
+                            Main.gameData.map[i][j].setSebzesinterval2(Main.gameData.map[i][j].getSebzesinterval2() - Main.gameData.lplayer.getVarazsero() * 2);
 
                         }
                             harcimamorTamad = false;
-                            Application.gameData.lplayer.setHarciMamorAktiv(false);
+                            Main.gameData.lplayer.setHarciMamorAktiv(false);
                     }
                 }
             }
 
-            if(Application.gameData.rplayer.isHarciMamorAktiv()) {
+            if(Main.gameData.rplayer.isHarciMamorAktiv()) {
                 for(int i = 0; i < 10; i++) {
                     for (int j = 0; j < 12; j++) {
-                        if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() == Application.gameData.rplayer) {
-                            Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() - Application.gameData.rplayer.getVarazsero() * 2);
-                            Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() - Application.gameData.rplayer.getVarazsero() * 2);
+                        if(Main.gameData.map[i][j] != null && Main.gameData.map[i][j].getGazda() == Main.gameData.rplayer) {
+                            Main.gameData.map[i][j].setSebzesinterval1(Main.gameData.map[i][j].getSebzesinterval1() - Main.gameData.rplayer.getVarazsero() * 2);
+                            Main.gameData.map[i][j].setSebzesinterval2(Main.gameData.map[i][j].getSebzesinterval2() - Main.gameData.rplayer.getVarazsero() * 2);
 
                         }
 
                         harcimamorTamad = false;
-                        Application.gameData.rplayer.setHarciMamorAktiv(false);
+                        Main.gameData.rplayer.setHarciMamorAktiv(false);
                     }
                 }
             }
@@ -1132,33 +1297,43 @@ public class FightController implements Initializable {
                 info.setText("Döntetlen!");
                 break;
             }
-            if(e.getGazda() == Application.gameData.lplayer) {
+            if(e.getGazda() == Main.gameData.lplayer) {
                 lEloEgysegek++;
             }
-            else if(e.getGazda() == Application.gameData.rplayer) {
+            else if(e.getGazda() == Main.gameData.rplayer) {
                 rEloEgysegek++;
             }
         }
 
+        System.out.println(lEloEgysegek + " " + rEloEgysegek);
+
         if(currentsr.length >= 1 && rEloEgysegek == 0) {
             info.setText("1. játékos nyert!");
+            Main.gameData.gyoztes = Main.gameData.lplayer;
         }
         else if(currentsr.length >= 1 && lEloEgysegek == 0) {
-            info.setText(Application.gameData.multiplayer ? "2." : "BOT" + " játékos nyert!");
-        }
-
-
-        if(lEloEgysegek != 0 && rEloEgysegek == 0) {
-            info.setText("1. játékos nyert!");
-        }
-        else if (lEloEgysegek == 0 && rEloEgysegek != 0)
-        {
-            info.setText(Application.gameData.multiplayer ? "2. játékos nyert!" : "BOT játékos nyert!");
+            info.setText(Main.gameData.multiplayer ? "2." : "BOT" + " játékos nyert!");
+            Main.gameData.gyoztes = Main.gameData.rplayer;
         }
         else if(lEloEgysegek == 0 && rEloEgysegek == 0) {
             info.setText("A meccs döntetlennel zárult.");
+            Main.gameData.gyoztes = null;
         }
+
+
+        if(lEloEgysegek == 0 ||rEloEgysegek == 0) {
+
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("epilogue.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage stage = (Stage) field.getScene().getWindow();
+            stage.setResizable(false);
+            stage.setScene(scene);
+
+        }
+
         //endregion
+
+
 
 
         //region magus kepesseg (makes no sense kind of meghivas)
@@ -1172,21 +1347,17 @@ public class FightController implements Initializable {
 
         //System.out.println(currentsr[currentSorszam].getNev() + currentsr[currentSorszam].getDb() + " " + currentsr[currentSorszam].getOsszHp());
 
-        if(currentsr[currentSorszam].getGazda() == Application.gameData.lplayer) {
-            Application.gameData.pakol = Application.gameData.lplayer;
+        if(currentsr[currentSorszam].getGazda() == Main.gameData.lplayer) {
+            Main.gameData.pakol = Main.gameData.lplayer;
         }
-        else if(Application.gameData.multiplayer && currentsr[currentSorszam].getGazda() == Application.gameData.rplayer) {
-            Application.gameData.pakol = Application.gameData.rplayer;
-        }
-        else {
-            //TODO ai
-            info.setText("Még nem tud gondolkozni szegény BOT!");
+        else if(currentsr[currentSorszam].getGazda() == Main.gameData.rplayer) {
+            Main.gameData.pakol = Main.gameData.rplayer;
         }
         for (Node node : field.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null
-                    && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null
-                    && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(currentsr[currentSorszam].getNev())) {
-                if(Application.gameData.pakol == Application.gameData.lplayer) {
+                    && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] != null
+                    && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)].getNev().contains(currentsr[currentSorszam].getNev())) {
+                if(Main.gameData.pakol == Main.gameData.lplayer) {
 
                     if(Objects.equals(node.getId(), "l" + currentsr[currentSorszam].getNev()))
                     {
@@ -1198,13 +1369,16 @@ public class FightController implements Initializable {
                     if(Objects.equals(node.getId(), "r" + currentsr[currentSorszam].getNev()))
                     {
                         System.out.println("Az első guy: " + currentsr[currentSorszam].getNev());
-                        node.setEffect(valasztott);
+                        if(Main.gameData.multiplayer)
+                            node.setEffect(valasztott);
+                        else
+                            aiLepkedo();
                     }
                 }
             }
         }
 
-        if(Application.gameData.pakol == Application.gameData.lplayer) {
+        if(Main.gameData.pakol == Main.gameData.lplayer) {
             for(Button a : ractions) {
                 a.setDisable(true);
             }
@@ -1217,22 +1391,22 @@ public class FightController implements Initializable {
             for(Button a : lactions) {
                 a.setDisable(true);
             }
-            if(Application.gameData.multiplayer) {
+            if(Main.gameData.multiplayer) {
                 for(Button a : ractions) {
                     a.setDisable(false);
                 }
             }
-            info.setText(Application.gameData.multiplayer ? "2. játékos következik!" : "BOT játékos következik!");
+            info.setText(Main.gameData.multiplayer ? "2. játékos következik!" : "BOT játékos következik!");
         }
 
     }
 
     @FXML
-    public void valasztottUnitAction(MouseEvent event) {
+    public void valasztottUnitAction(MouseEvent event) throws IOException {
 
         //region misc
         printSorrend(handleSorrend(currentsr));
-        String prefix = (Application.gameData.pakol == Application.gameData.lplayer ? "l" : "r");
+        String prefix = (Main.gameData.pakol == Main.gameData.lplayer ? "l" : "r");
         details1.setText("");
         //endregion
 
@@ -1240,21 +1414,36 @@ public class FightController implements Initializable {
         boolean tavolharciHasNearby = false;
         //region Hova léphet az úr illetve kiket támadhat?
         if(((Node)event.getSource()).getEffect() == valasztott) {
-            Egyseg egyseg = Application.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())];
+            Egyseg egyseg = Main.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())];
+
+            int x = 0,y = 0;
+            Set<Coords> okay = dijkstra(new Coords(GridPane.getRowIndex((Node)event.getSource()), GridPane.getColumnIndex((Node)event.getSource())), egyseg.getSebesseg());
+
             for (Node node : field.getChildren()) {
                 if(node instanceof ImageView) {
                     if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
-                        Egyseg enemy = Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)];
-                        int x = GridPane.getColumnIndex((Node)event.getSource());
-                        int y = GridPane.getRowIndex((Node)event.getSource());
+                        Egyseg enemy = Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)];
+                        x = GridPane.getColumnIndex((Node)event.getSource());
+                        y = GridPane.getRowIndex((Node)event.getSource());
 
-                        if(Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) <= currentsr[currentSorszam].getSebesseg()
-                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] == null)
+                        /*if(Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) <= currentsr[currentSorszam].getSebesseg()
+                            && Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] == null)
+                                    (node).setEffect(lepheto);*/
+
+                        for(Coords o : okay) {
+                            if(GridPane.getRowIndex(node) == o.row && GridPane.getColumnIndex(node) == o.col) {
+                                System.out.println("bejöttem mert itt volt egy jó kocka");
                                     (node).setEffect(lepheto);
+
+                                System.out.println(node.getEffect() == lepheto);
+                            }
+                        }
+
 
                         if(egyseg.isTavolHarci()) {
                             if(enemy != null && enemy.getGazda() != egyseg.getGazda() && (Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) == 1)) {
                                 tavolharciHasNearby = true;
+                                visszatamadasKozel = true;
                             }
                         }
                         if((enemy != null && enemy.getGazda() != egyseg.getGazda() && (Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) == 1) || (enemy != null && enemy.getGazda() != egyseg.getGazda() && egyseg.isTavolHarci()) && !tavolharciHasNearby)) {
@@ -1262,6 +1451,13 @@ public class FightController implements Initializable {
                             unitTamad = true;
                         }
                     }
+                }
+            }
+
+            for (Node node: field.getChildren()) {
+                if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) == y && GridPane.getColumnIndex(node) == x) {
+                    node.setEffect(valasztott);
+                    break;
                 }
             }
 
@@ -1279,14 +1475,14 @@ public class FightController implements Initializable {
                     if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && node.getId() != null && node.getId().contains(prefix + currentsr[currentSorszam].getNev())) {
                         node.setId(null);
                         ((ImageView)node).setImage(notnull);
-                        Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = null;
+                        Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = null;
 
                     }
                 }
 
                 //adjuk hozzá es una új
                 ((ImageView)event.getSource()).setId(prefix + currentsr[currentSorszam].getNev());
-                Application.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())] = currentsr[currentSorszam];
+                Main.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())] = currentsr[currentSorszam];
 
                 switch(currentsr[currentSorszam].getNev()) {
                     case "foldmuves" -> ((ImageView)event.getSource()).setImage(foldmuves);
@@ -1319,7 +1515,7 @@ public class FightController implements Initializable {
             String szenvedoUnit = "";
             //unit amit megtamadtak
             if(GridPane.getRowIndex((Node) event.getSource()) != null && GridPane.getColumnIndex((Node) event.getSource()) != null && (((Node) event.getSource()).getId() != null)) {
-                switch(Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getNev()) {
+                switch(Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getNev()) {
                     case "foldmuves" -> szenvedoUnit = "Földműves";
                     case "ijasz" -> szenvedoUnit = "Íjász";
                     case "griff" -> szenvedoUnit = "Griff";
@@ -1346,17 +1542,17 @@ public class FightController implements Initializable {
 
             if(GridPane.getRowIndex((Node) event.getSource()) != null && GridPane.getColumnIndex((Node) event.getSource()) != null && (((Node) event.getSource()).getId() != null)) {
                 switch (((ImageView) event.getSource()).getId()) {
-                    case "lfoldmuves" -> megtamadott = Application.gameData.lplayer.egysegek[0];
-                    case "lijasz" -> megtamadott = Application.gameData.lplayer.egysegek[1];
-                    case "lgriff" -> megtamadott = Application.gameData.lplayer.egysegek[2];
-                    case "lmagus" -> megtamadott = Application.gameData.lplayer.egysegek[3];
-                    case "lszupercsillagharcos" -> megtamadott = Application.gameData.lplayer.egysegek[4];
+                    case "lfoldmuves" -> megtamadott = Main.gameData.lplayer.egysegek[0];
+                    case "lijasz" -> megtamadott = Main.gameData.lplayer.egysegek[1];
+                    case "lgriff" -> megtamadott = Main.gameData.lplayer.egysegek[2];
+                    case "lmagus" -> megtamadott = Main.gameData.lplayer.egysegek[3];
+                    case "lszupercsillagharcos" -> megtamadott = Main.gameData.lplayer.egysegek[4];
 
-                    case "rfoldmuves" -> megtamadott = Application.gameData.rplayer.egysegek[0];
-                    case "rijasz" -> megtamadott = Application.gameData.rplayer.egysegek[1];
-                    case "rgriff" -> megtamadott = Application.gameData.rplayer.egysegek[2];
-                    case "rmagus" -> megtamadott = Application.gameData.rplayer.egysegek[3];
-                    case "rszupercsillagharcos" -> megtamadott = Application.gameData.rplayer.egysegek[4];
+                    case "rfoldmuves" -> megtamadott = Main.gameData.rplayer.egysegek[0];
+                    case "rijasz" -> megtamadott = Main.gameData.rplayer.egysegek[1];
+                    case "rgriff" -> megtamadott = Main.gameData.rplayer.egysegek[2];
+                    case "rmagus" -> megtamadott = Main.gameData.rplayer.egysegek[3];
+                    case "rszupercsillagharcos" -> megtamadott = Main.gameData.rplayer.egysegek[4];
                 }
             }
             //endregion
@@ -1366,11 +1562,11 @@ public class FightController implements Initializable {
                 //a hős nem tud kritelni
                 boolean crit = false;
 
-                int dmg = Application.gameData.pakol.getTamadas() * 10;
-                int currentHp = Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp();
+                int dmg = Main.gameData.pakol.getTamadas() * 10;
+                int currentHp = Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp();
 
                 //az adott unitnak meg kéne változtatni az összhpját
-                Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(currentHp - dmg);
+                Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(currentHp - dmg);
 
                 //nézzük meg hogy Halt-e.
                 unitHalt(event, szenvedoUnit, dmg, crit);
@@ -1402,7 +1598,7 @@ public class FightController implements Initializable {
             if(unitTamad) {
                 //mennyi lesz a demidzs Odafelé
                 int dmg;
-                Hos enemy = (Application.gameData.pakol == Application.gameData.lplayer) ? Application.gameData.rplayer : Application.gameData.lplayer;
+                Hos enemy = (Main.gameData.pakol == Main.gameData.lplayer) ? Main.gameData.rplayer : Main.gameData.lplayer;
 
                 //generálunk randomot az intervallumról
                 Random rnd = new Random();
@@ -1414,7 +1610,7 @@ public class FightController implements Initializable {
                 unitGenDmg *= currentsr[currentSorszam].getDb();
                 System.out.println("darabokkal base: " + unitGenDmg);
                 //támadási bonusz
-                unitGenDmg *= 1 + (double)Application.gameData.pakol.getTamadas() / 10;
+                unitGenDmg *= 1 + (double) Main.gameData.pakol.getTamadas() / 10;
                 System.out.println("támadás bonusz: " + unitGenDmg);
                 //enemy armorját százalákosan vonjuk 5% / pont
                 unitGenDmg *= 1 - (0.05 * enemy.getVedekezes());
@@ -1423,7 +1619,7 @@ public class FightController implements Initializable {
                 dmg = (int)Math.round(unitGenDmg);
                 System.out.println("beküldött dmg: " + dmg);
 
-                double szerencse = 100 * Application.gameData.pakol.getSzerencse() * 0.05; //pl 3 szerencse esetén 15% esélyünk van
+                double szerencse = 100 * Main.gameData.pakol.getSzerencse() * 0.05; //pl 3 szerencse esetén 15% esélyünk van
                 double tryluck = 100 * ((double)rnd.nextInt(100) / 100);
                 boolean crit = szerencse > tryluck;
 
@@ -1444,10 +1640,10 @@ public class FightController implements Initializable {
                     unitDmgBack *= 1 + (double) enemy.getTamadas() / 10;
                     System.out.println("v támadás bonusz: " + unitDmgBack);
                     //vedekezes -
-                    unitDmgBack *= 1 - (0.05 * Application.gameData.pakol.getVedekezes());
+                    unitDmgBack *= 1 - (0.05 * Main.gameData.pakol.getVedekezes());
                     System.out.println("v kivont védekezéssel: " + unitDmgBack);
                     //kesz
-                    dmgback = (int) Math.round(unitDmgBack) / 2;
+                    dmgback = (int) Math.ceil(unitDmgBack) / 2;
                     System.out.println("visszaküldött dmg: " + dmgback);
 
                     boolean kikeruli = false;
@@ -1460,7 +1656,7 @@ public class FightController implements Initializable {
                     }
                     if(!kikeruli)
                     {
-                        Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(megtamadott.getOsszHp() - dmg);
+                        Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(megtamadott.getOsszHp() - dmg);
                         //nézzük meg hogy Halt-e.
                         visszaTamadasJelzoGepKetezer = unitHalt(event, szenvedoUnit, dmg, crit);
                     }
@@ -1479,8 +1675,8 @@ public class FightController implements Initializable {
 
                     if(Objects.equals(currentsr[currentSorszam].getNev(), "magus")) {
                         if(currentsr[currentSorszam].getOsszHp() < currentsr[currentSorszam].getHp() * currentsr[currentSorszam].getDb()) {
-                            currentsr[currentSorszam].setOsszHp(currentsr[currentSorszam].getOsszHp() + Application.gameData.pakol.getVarazsero() * 5);
-                            details1.setText("A mágus egység támadása során gyógyult " + Application.gameData.pakol.getVarazsero() * 5 + " életerőt.");
+                            currentsr[currentSorszam].setOsszHp(currentsr[currentSorszam].getOsszHp() + Main.gameData.pakol.getVarazsero() * 5);
+                            details1.setText("A mágus egység támadása során gyógyult " + Main.gameData.pakol.getVarazsero() * 5 + " életerőt.");
                             System.out.println("mágus: gyógyultam");
                         }
                         else {
@@ -1492,12 +1688,16 @@ public class FightController implements Initializable {
                     //endregion
 
                     //visszatámadás momento
-                    if (!visszaTamadasJelzoGepKetezer && !megtamadott.isVisszatamadtAKorben()) {
+                    if(!currentsr[currentSorszam].isTavolHarci()) {
+                        visszatamadasKozel = true;
+                    }
+                    if (!visszaTamadasJelzoGepKetezer && !megtamadott.isVisszatamadtAKorben() && visszatamadasKozel) {
+                        visszatamadasKozel = false;
                         int row = 0;
                         int col = 0;
                         for (int i = 0; i < 10; i++) {
                             for (int j = 0; j < 12; j++) {
-                                if (Application.gameData.map[i][j] != null && Objects.equals(Application.gameData.map[i][j].getNev(), currentsr[currentSorszam].getNev()) && Application.gameData.map[i][j].getGazda() == Application.gameData.pakol) {
+                                if (Main.gameData.map[i][j] != null && Objects.equals(Main.gameData.map[i][j].getNev(), currentsr[currentSorszam].getNev()) && Main.gameData.map[i][j].getGazda() == Main.gameData.pakol) {
                                     row = i;
                                     System.out.println("i:" + row);
                                     col = j;
@@ -1505,16 +1705,16 @@ public class FightController implements Initializable {
                                 }
                             }
                         }
-                        if (Application.gameData.map[row][col] != null) {
-                            Application.gameData.map[row][col].setOsszHp(Application.gameData.map[row][col].getOsszHp() - dmgback);
+                        if (Main.gameData.map[row][col] != null) {
+                            Main.gameData.map[row][col].setOsszHp(Main.gameData.map[row][col].getOsszHp() - dmgback);
                             megtamadott.setVisszatamadtAKorben(true);
                             //nézzük meg hogy Halt-e.
-                            if (Application.gameData.map[row][col].getOsszHp() <= 0) {
+                            if (Main.gameData.map[row][col].getOsszHp() <= 0) {
 
                                 //a progi 0-ra checkel szoval legyen 0
 
-                                Application.gameData.map[row][col].setOsszHp(0);
-                                Application.gameData.map[row][col].setDb(0);
+                                Main.gameData.map[row][col].setOsszHp(0);
+                                Main.gameData.map[row][col].setDb(0);
 
 
                                 //tüntessük EL
@@ -1532,29 +1732,29 @@ public class FightController implements Initializable {
 
 
                                 //map
-                                Application.gameData.map[row][col] = null;
+                                Main.gameData.map[row][col] = null;
 
-                                details1.setText("HALÁLOS VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.rplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+                                backattack.setText("HALÁLOS VISSZATÁMADÁS! " + dmg + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Main.gameData.pakol == Main.gameData.rplayer ? "1. játékos" : (Main.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
                             }
                             //nem halt szoval csak frissitsuk az infokat
                             else {
                                 //darabszam
-                                details1.setText("VISSZATÁMADÁS! " + dmgback + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.rplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+                                backattack.setText("VISSZATÁMADÁS! " + dmgback + " sebzés került kiosztásra " + kuldoUnit + " egységnek " + (Main.gameData.pakol == Main.gameData.rplayer ? "1. játékos" : (Main.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
-                                boolean vanserult = Application.gameData.map[row][col].getOsszHp() % Application.gameData.map[row][col].getHp() != 0;
+                                boolean vanserult = Main.gameData.map[row][col].getOsszHp() % Main.gameData.map[row][col].getHp() != 0;
 
-                                Application.gameData.map[row][col].setDb(Application.gameData.map[row][col].getOsszHp() / Application.gameData.map[row][col].getHp() + (vanserult ? 1 : 0));
+                                Main.gameData.map[row][col].setDb(Main.gameData.map[row][col].getOsszHp() / Main.gameData.map[row][col].getHp() + (vanserult ? 1 : 0));
 
                                 //oszt ennyi
                             }
                         }
 
                     } else {
-                        details1.setText("Nem került sor visszatámadásra!");
+                        backattack.setText("Nem került sor visszatámadásra!");
                     }
                 }else {
-                    details1.setText("Felfoghatatlan dolog történt! Semmi gond, megy tovább minden!");
+                    backattack.setText("Felfoghatatlan dolog történt! Semmi gond, megy tovább minden!");
                 }
 
                 //leszedünk minden jelzést és next kör
@@ -1583,12 +1783,12 @@ public class FightController implements Initializable {
 
             //region villámcsapás támad
             if(villamcsapasTamad) {
-                if(megtamadott != null && Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[0].getManaCost()) {
-                    megtamadott.setOsszHp(megtamadott.getOsszHp() - Application.gameData.pakol.getVarazsero() * 30);
-                    Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - 5);
-                    details1.setText(szenvedoUnit + " meg lett villámcsapva! " + Application.gameData.pakol.getVarazsero() * 30 + " sebzést szenvedett.");
-                    lmana.setText(Application.gameData.lplayer.getMana() + " mana");
-                    rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                if(megtamadott != null && Main.gameData.pakol.getMana() > Main.gameData.pakol.elerhetoVarazslatok[0].getManaCost()) {
+                    megtamadott.setOsszHp(megtamadott.getOsszHp() - Main.gameData.pakol.getVarazsero() * 30);
+                    Main.gameData.pakol.setMana(Main.gameData.pakol.getMana() - 5);
+                    details1.setText(szenvedoUnit + " meg lett villámcsapva! " + Main.gameData.pakol.getVarazsero() * 30 + " sebzést szenvedett.");
+                    lmana.setText(Main.gameData.lplayer.getMana() + " mana");
+                    rmana.setText(Main.gameData.rplayer.getMana() + " mana");
 
                     villamcsapasTamad = false;
                     jelolesTorlese();
@@ -1604,7 +1804,7 @@ public class FightController implements Initializable {
             //region tűzlabda támad
             if(tuzlabdaTamad) {
                 //kéne a pont ami a közepe
-                if(Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[1].getManaCost()) {
+                if(Main.gameData.pakol.getMana() > Main.gameData.pakol.elerhetoVarazslatok[1].getManaCost()) {
                     int x = GridPane.getRowIndex((Node)event.getSource());
                     int y = GridPane.getColumnIndex((Node)event.getSource());
 
@@ -1622,18 +1822,18 @@ public class FightController implements Initializable {
                                 }
 
                             }
-                            if(Application.gameData.map[i][j] != null) {
-                                erintettek[k] = Application.gameData.map[i][j];
+                            if(Main.gameData.map[i][j] != null) {
+                                erintettek[k] = Main.gameData.map[i][j];
                                 k++;
-                                Application.gameData.map[i][j].setOsszHp(Application.gameData.map[i][j].getOsszHp() - Application.gameData.pakol.getVarazsero() * 20);
+                                Main.gameData.map[i][j].setOsszHp(Main.gameData.map[i][j].getOsszHp() - Main.gameData.pakol.getVarazsero() * 20);
 
-                                boolean vanserult = Application.gameData.map[i][j].getOsszHp() % Application.gameData.map[i][j].getHp() != 0;
-                                Application.gameData.map[i][j].setDb(Application.gameData.map[i][j].getOsszHp() / Application.gameData.map[i][j].getHp() + (vanserult ? 1 : 0));
+                                boolean vanserult = Main.gameData.map[i][j].getOsszHp() % Main.gameData.map[i][j].getHp() != 0;
+                                Main.gameData.map[i][j].setDb(Main.gameData.map[i][j].getOsszHp() / Main.gameData.map[i][j].getHp() + (vanserult ? 1 : 0));
 
-                                if(Application.gameData.map[i][j].getOsszHp() <= 0) {
+                                if(Main.gameData.map[i][j].getOsszHp() <= 0) {
 
-                                    Application.gameData.map[i][j].setOsszHp(0);
-                                    Application.gameData.map[i][j].setDb(0);
+                                    Main.gameData.map[i][j].setOsszHp(0);
+                                    Main.gameData.map[i][j].setDb(0);
 
                                     //tüntessük EL
                                     //mező
@@ -1653,22 +1853,22 @@ public class FightController implements Initializable {
 
 
                                     //map
-                                    Application.gameData.map[i][j] = null;
+                                    Main.gameData.map[i][j] = null;
                                 }
                             }
                         }
                     }
-                    Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - Application.gameData.pakol.elerhetoVarazslatok[1].getManaCost());
-                    lmana.setText(Application.gameData.lplayer.getMana() + " mana");
-                    rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                    Main.gameData.pakol.setMana(Main.gameData.pakol.getMana() - Main.gameData.pakol.elerhetoVarazslatok[1].getManaCost());
+                    lmana.setText(Main.gameData.lplayer.getMana() + " mana");
+                    rmana.setText(Main.gameData.rplayer.getMana() + " mana");
                     StringBuilder erintettUnitok = new StringBuilder();
 
                     for(Egyseg e : erintettek) {
                         if(e != null) {
-                            erintettUnitok.append(e.getNev()).append(" (").append(e.getGazda() == Application.gameData.lplayer ? "p1), " : "p2), ");
+                            erintettUnitok.append(e.getNev()).append(" (").append(e.getGazda() == Main.gameData.lplayer ? "p1), " : "p2), ");
                         }
                     }
-                    details1.setText(erintettUnitok + "sebzést szenvedtek a tűzlabdában! Ami " + Application.gameData.pakol.getVarazsero() * 20 + " sebzés.");
+                    details1.setText(erintettUnitok + "sebzést szenvedtek a tűzlabdában! Ami " + Main.gameData.pakol.getVarazsero() * 20 + " sebzés.");
 
                     tuzlabdaTamad = false;
                     jelolesTorlese();
@@ -1682,13 +1882,13 @@ public class FightController implements Initializable {
 
             //region kötélbilincs támad
             if(kotelblilincsTamad) {
-                if(Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost()) {
-                    Application.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())].setKimarad(true);
+                if(Main.gameData.pakol.getMana() > Main.gameData.pakol.elerhetoVarazslatok[2].getManaCost()) {
+                    Main.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())].setKimarad(true);
 
-                    Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
+                    Main.gameData.pakol.setMana(Main.gameData.pakol.getMana() - Main.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
                     details1.setText(szenvedoUnit + " kötélbilincsbe került a következő körig.");
-                    lmana.setText(Application.gameData.lplayer.getMana() + " mana");
-                    rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                    lmana.setText(Main.gameData.lplayer.getMana() + " mana");
+                    rmana.setText(Main.gameData.rplayer.getMana() + " mana");
 
                     kotelblilincsTamad = false;
                     jelolesTorlese();
@@ -1710,12 +1910,12 @@ public class FightController implements Initializable {
     }
 
     private boolean unitHalt(MouseEvent event, String szenvedoUnit, int dmg, boolean crit) {
-        if (Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() <= 0) {
+        if (Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() <= 0) {
 
             //a progi 0-ra checkel szoval legyen 0
 
-            Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(0);
-            Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setDb(0);
+            Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(0);
+            Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setDb(0);
 
 
             //tüntessük EL
@@ -1725,9 +1925,9 @@ public class FightController implements Initializable {
             ((ImageView) event.getSource()).setId(null);
 
             //map
-            Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())] = null;
+            Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())] = null;
 
-            details1.setText("EGYSÉG ELHULLOTT! " + dmg + (crit ? "KRITKUS" : "") + " sebzés került kiosztásra! " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által! Ezzel megadta a kegyelemdöfést az ellenfél " + szenvedoUnit + " számára!");
+            details1.setText("EGYSÉG ELHULLOTT! " + dmg + (crit ? " KRITIKUS" : "") + " sebzés került kiosztásra! " + (Main.gameData.pakol == Main.gameData.lplayer ? "1. játékos" : (Main.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által! Ezzel megadta\na kegyelemdöfést az ellenfél " + szenvedoUnit + " számára!");
 
             return true;
 
@@ -1735,11 +1935,11 @@ public class FightController implements Initializable {
         //nem halt szoval csak frissitsuk az infokat
         else {
             //darabszam
-            details1.setText("EGYSÉG SEBZÉS! "+ dmg + (crit ? "KRITKUS" : "") + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+            details1.setText("EGYSÉG SEBZÉS! "+ dmg + (crit ? " KRITIKUS" : "") + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Main.gameData.pakol == Main.gameData.lplayer ? "1. játékos" : (Main.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
-            boolean vanserult = Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() % Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getHp() != 0;
+            boolean vanserult = Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() % Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getHp() != 0;
 
-            Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setDb(Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() / Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getHp() + (vanserult ? 1 : 0));
+            Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setDb(Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() / Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getHp() + (vanserult ? 1 : 0));
 
             //oszt ennyi
             return false;

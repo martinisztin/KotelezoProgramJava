@@ -7,6 +7,7 @@ public class DataContainer {
     public Hos lplayer, rplayer;
     public boolean multiplayer;
     public Hos pakol;
+    public Hos gyoztes;
 
     public int kor = 1;
 
@@ -16,6 +17,7 @@ public class DataContainer {
         this.lplayer = lplayer;
         this.rplayer = rplayer;
         this.multiplayer = multiplayer;
+        this.gyoztes = null;
 
         for(int i = 0; i < 10; i++) {
             for (int j = 0; j < 12; j++) {

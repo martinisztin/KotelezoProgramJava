@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bkyzsa.heroeskotprog.controllers.StatsummaryController">
+   <children>
+      <ImageView fx:id="player1img" fitHeight="100.0" fitWidth="100.0" layoutX="14.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player2img" fitHeight="100.0" fitWidth="100.0" layoutX="486.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" scaleX="-1.0" />
+      <Label fx:id="p1label" alignment="CENTER" layoutX="21.0" layoutY="139.0" prefHeight="17.0" prefWidth="87.0" text="1. játékos" />
+      <Label fx:id="p2label" alignment="CENTER" layoutX="493.0" layoutY="139.0" prefHeight="17.0" prefWidth="87.0" text="2. játékos" />
+      <Label fx:id="p1stats" alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="21.0" layoutY="184.0" prefHeight="406.0" prefWidth="251.0" text="Label" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="p2stats" alignment="TOP_RIGHT" contentDisplay="CENTER" layoutX="329.0" layoutY="184.0" prefHeight="406.0" prefWidth="251.0" text="Label" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="276.0" layoutY="561.0" mnemonicParsing="false" onAction="#csata" text="Csata!" />
+      <Label layoutX="252.0" layoutY="13.0" text="Elemzés">
+         <font>
+            <Font name="System Bold" size="25.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

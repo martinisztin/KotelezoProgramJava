@@ -35,15 +35,15 @@
       <Button layoutX="230.0" layoutY="436.0" mnemonicParsing="false" onAction="#addSzerencse" text="+" />
       <Button layoutX="174.0" layoutY="436.0" mnemonicParsing="false" onAction="#removeSzerencse" text="-" />
       <Label layoutX="62.0" layoutY="440.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="100.0" text="Szerencse" />
-      <TextField fx:id="foldmuves" layoutX="468.0" layoutY="269.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
+      <TextField fx:id="foldmuves" layoutX="468.0" layoutY="269.0" onKeyReleased="#egysegVasarlo" onMouseReleased="#textBoxKijelolo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="273.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Földműves" />
-      <TextField fx:id="ijasz" layoutX="468.0" layoutY="303.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
+      <TextField fx:id="ijasz" layoutX="468.0" layoutY="303.0" onKeyReleased="#egysegVasarlo" onMouseReleased="#textBoxKijelolo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="307.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Íjász" />
-      <TextField fx:id="griff" layoutX="468.0" layoutY="337.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
+      <TextField fx:id="griff" layoutX="468.0" layoutY="337.0" onKeyReleased="#egysegVasarlo" onMouseReleased="#textBoxKijelolo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="341.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Griff" />
-      <TextField fx:id="magus" layoutX="468.0" layoutY="371.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
+      <TextField fx:id="magus" layoutX="468.0" layoutY="371.0" onKeyReleased="#egysegVasarlo" onMouseReleased="#textBoxKijelolo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="375.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Mágus" />
-      <TextField fx:id="szupercsillagharcos" layoutX="468.0" layoutY="405.0" onKeyReleased="#egysegVasarlo" prefWidth="50.0" text="0" />
+      <TextField fx:id="szupercsillagharcos" layoutX="468.0" layoutY="405.0" onKeyReleased="#egysegVasarlo" onMouseReleased="#textBoxKijelolo" prefWidth="50.0" text="0" />
       <Label alignment="CENTER" layoutX="329.0" layoutY="409.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Szupercsillagharcos" />
       <Label alignment="CENTER" layoutX="599.0" layoutY="274.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Villámcsapás" />
       <Label alignment="CENTER" layoutX="599.0" layoutY="308.0" onMouseEntered="#hoverOn" onMouseExited="#hoverOff" prefWidth="130.0" text="Tűzlabda" />

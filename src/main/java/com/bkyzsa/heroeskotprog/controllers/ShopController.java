@@ -1,6 +1,6 @@
 package com.bkyzsa.heroeskotprog.controllers;
 
-import com.bkyzsa.heroeskotprog.Application;
+import com.bkyzsa.heroeskotprog.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -78,7 +78,7 @@ public class ShopController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        String nehezsegS = switch (Application.playerHos.getArany()) {
+        String nehezsegS = switch (Main.gameData.pakol.getArany()) {
             case 1300 -> "Könnyű";
             case 1000 -> "Közepes";
             case 700 -> "Nehéz";
@@ -86,7 +86,7 @@ public class ShopController implements Initializable {
         };
 
         nehezseg.setText("Válaszott nehézség - " + nehezsegS);
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
         foldmuves.setText("0");
         ijasz.setText("0");
         griff.setText("0");
@@ -95,40 +95,40 @@ public class ShopController implements Initializable {
         info.setText("");
     }
 
-    public static int kivalasztottArany = Application.gameData.pakol.getArany();
+    public static int kivalasztottArany = Main.gameData.pakol.getArany();
 
     private int arReturnerById(String content) {
         switch(content) {
             case "foldmuves" -> {
-                return Application.gameData.pakol.egysegek[0].getAr();
+                return Main.gameData.pakol.egysegek[0].getAr();
             }
             case "ijasz" -> {
-                return Application.gameData.pakol.egysegek[1].getAr();
+                return Main.gameData.pakol.egysegek[1].getAr();
             }
             case "griff" -> {
-                return Application.gameData.pakol.egysegek[2].getAr();
+                return Main.gameData.pakol.egysegek[2].getAr();
             }
             case "magus" -> {
-                return Application.gameData.pakol.egysegek[3].getAr();
+                return Main.gameData.pakol.egysegek[3].getAr();
             }
             case "szupercsillagharcos" -> {
-                return Application.gameData.pakol.egysegek[4].getAr();
+                return Main.gameData.pakol.egysegek[4].getAr();
             }
 
             case "villamcsapas" -> {
-                return Application.gameData.pakol.elerhetoVarazslatok[0].getAr();
+                return Main.gameData.pakol.elerhetoVarazslatok[0].getAr();
             }
             case "tuzlabda" -> {
-                return Application.gameData.pakol.elerhetoVarazslatok[1].getAr();
+                return Main.gameData.pakol.elerhetoVarazslatok[1].getAr();
             }
             case "feltamasztas" -> {
-                return Application.gameData.pakol.elerhetoVarazslatok[2].getAr();
+                return Main.gameData.pakol.elerhetoVarazslatok[2].getAr();
             }
             case "kotelbilincs" -> {
-                return Application.gameData.pakol.elerhetoVarazslatok[3].getAr();
+                return Main.gameData.pakol.elerhetoVarazslatok[3].getAr();
             }
             case "harcimamor" -> {
-                return Application.gameData.pakol.elerhetoVarazslatok[4].getAr();
+                return Main.gameData.pakol.elerhetoVarazslatok[4].getAr();
             }
 
         }
@@ -139,17 +139,17 @@ public class ShopController implements Initializable {
     @FXML
     public void hoverOn(MouseEvent event) {
         switch(((Label)event.getSource()).getText()) {
-            case "Tűzlabda" -> info.setText(Application.gameData.pakol.elerhetoVarazslatok[0].toString());
-            case "Villámcsapás" -> info.setText(Application.gameData.pakol.elerhetoVarazslatok[1].toString());
-            case "Feltámasztás" -> info.setText(Application.gameData.pakol.elerhetoVarazslatok[2].toString());
-            case "Kötélbilincs" -> info.setText(Application.gameData.pakol.elerhetoVarazslatok[3].toString());
-            case "Harci Mámor" -> info.setText(Application.gameData.pakol.elerhetoVarazslatok[4].toString());
+            case "Tűzlabda" -> info.setText(Main.gameData.pakol.elerhetoVarazslatok[0].toString());
+            case "Villámcsapás" -> info.setText(Main.gameData.pakol.elerhetoVarazslatok[1].toString());
+            case "Feltámasztás" -> info.setText(Main.gameData.pakol.elerhetoVarazslatok[2].toString());
+            case "Kötélbilincs" -> info.setText(Main.gameData.pakol.elerhetoVarazslatok[3].toString());
+            case "Harci Mámor" -> info.setText(Main.gameData.pakol.elerhetoVarazslatok[4].toString());
 
-            case "Földműves" -> info.setText(Application.gameData.pakol.egysegek[0].toString());
-            case "Íjász" -> info.setText(Application.gameData.pakol.egysegek[1].toString());
-            case "Griff" -> info.setText(Application.gameData.pakol.egysegek[2].toString());
-            case "Mágus" -> info.setText(Application.gameData.pakol.egysegek[3].toString());
-            case "Szupercsillagharcos" -> info.setText(Application.gameData.pakol.egysegek[4].toString());
+            case "Földműves" -> info.setText(Main.gameData.pakol.egysegek[0].toString());
+            case "Íjász" -> info.setText(Main.gameData.pakol.egysegek[1].toString());
+            case "Griff" -> info.setText(Main.gameData.pakol.egysegek[2].toString());
+            case "Mágus" -> info.setText(Main.gameData.pakol.egysegek[3].toString());
+            case "Szupercsillagharcos" -> info.setText(Main.gameData.pakol.egysegek[4].toString());
 
             case "Támadás" -> info.setText("az egységek sebzését növeli meg, tulajdonságpontonként 10%-kal.");
             case "Védekezés" -> info.setText("az egységeket ért sebzést csökkenti, tulajdonságpontonként 5%-kal.");
@@ -177,7 +177,7 @@ public class ShopController implements Initializable {
         //System.out.println(skillek);
 
         int sum = 0;
-        int statusz = Application.gameData.pakol.statuszAr;
+        int statusz = Main.gameData.pakol.statuszAr;
 
         for(int i = 0; i < skillek; i++) {
             sum += statusz;
@@ -201,6 +201,11 @@ public class ShopController implements Initializable {
 
 
         return sum;
+    }
+
+    @FXML
+    public void textBoxKijelolo(MouseEvent event) {
+        ((TextField)event.getSource()).selectAll();
     }
 
     @FXML
@@ -232,180 +237,180 @@ public class ShopController implements Initializable {
             System.out.println("mi a gecit csinálok itt");
         }
 
-        Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
         System.out.println("mindent megkeráztam + " + vasarlas());
     }
 
     @FXML
     public void spellVasarlo(ActionEvent event) {
-        Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
 
-        if(Application.gameData.pakol.getArany() < 0) {
+        if(Main.gameData.pakol.getArany() < 0) {
             ((CheckBox)event.getSource()).setSelected(false);
-                Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+                Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
 
     //region statuszadogato
     @FXML
     public void addTamadas() {
-        if(Application.gameData.pakol.getTamadas() < 10) {
-            Application.gameData.pakol.setTamadas(Application.gameData.pakol.getTamadas() + 1);
-            tamadas.setText("" + Application.gameData.pakol.getTamadas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getTamadas() < 10) {
+            Main.gameData.pakol.setTamadas(Main.gameData.pakol.getTamadas() + 1);
+            tamadas.setText("" + Main.gameData.pakol.getTamadas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setTamadas(Application.gameData.pakol.getTamadas() - 1);
-            tamadas.setText("" + Application.gameData.pakol.getTamadas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setTamadas(Main.gameData.pakol.getTamadas() - 1);
+            tamadas.setText("" + Main.gameData.pakol.getTamadas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void removeTamadas() {
-        if(Application.gameData.pakol.getTamadas() > 1) {
-            Application.gameData.pakol.setTamadas(Application.gameData.pakol.getTamadas() - 1);
-            tamadas.setText("" + Application.gameData.pakol.getTamadas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getTamadas() > 1) {
+            Main.gameData.pakol.setTamadas(Main.gameData.pakol.getTamadas() - 1);
+            tamadas.setText("" + Main.gameData.pakol.getTamadas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void addVedekezes() {
-        if(Application.gameData.pakol.getVedekezes() < 10) {
-            Application.gameData.pakol.setVedekezes(Application.gameData.pakol.getVedekezes() + 1);
-            vedekezes.setText("" + Application.gameData.pakol.getVedekezes());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getVedekezes() < 10) {
+            Main.gameData.pakol.setVedekezes(Main.gameData.pakol.getVedekezes() + 1);
+            vedekezes.setText("" + Main.gameData.pakol.getVedekezes());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setVedekezes(Application.gameData.pakol.getVedekezes() - 1);
-            vedekezes.setText("" + Application.gameData.pakol.getVedekezes());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setVedekezes(Main.gameData.pakol.getVedekezes() - 1);
+            vedekezes.setText("" + Main.gameData.pakol.getVedekezes());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
     }
 
     @FXML
     public void removeVedekezes() {
-        if(Application.gameData.pakol.getVedekezes() > 1) {
-            Application.gameData.pakol.setVedekezes(Application.gameData.pakol.getVedekezes() - 1);
-            vedekezes.setText("" + Application.gameData.pakol.getVedekezes());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getVedekezes() > 1) {
+            Main.gameData.pakol.setVedekezes(Main.gameData.pakol.getVedekezes() - 1);
+            vedekezes.setText("" + Main.gameData.pakol.getVedekezes());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void addVarazsero() {
-        if(Application.gameData.pakol.getVarazsero() < 10) {
-            Application.gameData.pakol.setVarazsero(Application.gameData.pakol.getVarazsero() + 1);
-            varazsero.setText("" + Application.gameData.pakol.getVarazsero());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getVarazsero() < 10) {
+            Main.gameData.pakol.setVarazsero(Main.gameData.pakol.getVarazsero() + 1);
+            varazsero.setText("" + Main.gameData.pakol.getVarazsero());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setVarazsero(Application.gameData.pakol.getVarazsero() - 1);
-            varazsero.setText("" + Application.gameData.pakol.getVarazsero());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setVarazsero(Main.gameData.pakol.getVarazsero() - 1);
+            varazsero.setText("" + Main.gameData.pakol.getVarazsero());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
     }
 
     @FXML
     public void removeVarazsero() {
-        if(Application.gameData.pakol.getVarazsero() > 1) {
-            Application.gameData.pakol.setVarazsero(Application.gameData.pakol.getVarazsero() - 1);
-            varazsero.setText("" + Application.gameData.pakol.getVarazsero());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getVarazsero() > 1) {
+            Main.gameData.pakol.setVarazsero(Main.gameData.pakol.getVarazsero() - 1);
+            varazsero.setText("" + Main.gameData.pakol.getVarazsero());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void addTudas() {
-        if(Application.gameData.pakol.getTudas() < 10) {
-            Application.gameData.pakol.setTudas(Application.gameData.pakol.getTudas() + 1);
-            tudas.setText("" + Application.gameData.pakol.getTudas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getTudas() < 10) {
+            Main.gameData.pakol.setTudas(Main.gameData.pakol.getTudas() + 1);
+            tudas.setText("" + Main.gameData.pakol.getTudas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
 
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setTudas(Application.gameData.pakol.getTudas() - 1);
-            tudas.setText("" + Application.gameData.pakol.getTudas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setTudas(Main.gameData.pakol.getTudas() - 1);
+            tudas.setText("" + Main.gameData.pakol.getTudas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
 
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
     }
 
     @FXML
     public void removeTudas() {
-        if(Application.gameData.pakol.getTudas() > 1) {
-            Application.gameData.pakol.setTudas(Application.gameData.pakol.getTudas() - 1);
-            tudas.setText("" + Application.gameData.pakol.getTudas());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getTudas() > 1) {
+            Main.gameData.pakol.setTudas(Main.gameData.pakol.getTudas() - 1);
+            tudas.setText("" + Main.gameData.pakol.getTudas());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void addMoral() {
-        if(Application.gameData.pakol.getMoral() < 10) {
-            Application.gameData.pakol.setMoral(Application.gameData.pakol.getMoral() + 1);
-            moral.setText("" + Application.gameData.pakol.getMoral());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getMoral() < 10) {
+            Main.gameData.pakol.setMoral(Main.gameData.pakol.getMoral() + 1);
+            moral.setText("" + Main.gameData.pakol.getMoral());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setMoral(Application.gameData.pakol.getMoral() - 1);
-            moral.setText("" + Application.gameData.pakol.getMoral());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setMoral(Main.gameData.pakol.getMoral() - 1);
+            moral.setText("" + Main.gameData.pakol.getMoral());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
     }
 
     @FXML
     public void removeMoral() {
-        if(Application.gameData.pakol.getMoral() > 1) {
-            Application.gameData.pakol.setMoral(Application.gameData.pakol.getMoral() - 1);
-            moral.setText("" + Application.gameData.pakol.getMoral());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getMoral() > 1) {
+            Main.gameData.pakol.setMoral(Main.gameData.pakol.getMoral() - 1);
+            moral.setText("" + Main.gameData.pakol.getMoral());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
 
     @FXML
     public void addSzerencse() {
-        if(Application.gameData.pakol.getSzerencse() < 10) {
-            Application.gameData.pakol.setSzerencse(Application.gameData.pakol.getSzerencse() + 1);
-            szerencse.setText("" + Application.gameData.pakol.getSzerencse());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getSzerencse() < 10) {
+            Main.gameData.pakol.setSzerencse(Main.gameData.pakol.getSzerencse() + 1);
+            szerencse.setText("" + Main.gameData.pakol.getSzerencse());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        if(Application.gameData.pakol.getArany() < 0) {
-            Application.gameData.pakol.setSzerencse(Application.gameData.pakol.getSzerencse() - 1);
-            szerencse.setText("" + Application.gameData.pakol.getSzerencse());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getArany() < 0) {
+            Main.gameData.pakol.setSzerencse(Main.gameData.pakol.getSzerencse() - 1);
+            szerencse.setText("" + Main.gameData.pakol.getSzerencse());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
 
     }
 
     @FXML
     public void removeSzerencse() {
-        if(Application.gameData.pakol.getSzerencse() > 1) {
-            Application.gameData.pakol.setSzerencse(Application.gameData.pakol.getSzerencse() - 1);
-            szerencse.setText("" + Application.gameData.pakol.getSzerencse());
-            Application.gameData.pakol.setArany(kivalasztottArany - vasarlas());
+        if(Main.gameData.pakol.getSzerencse() > 1) {
+            Main.gameData.pakol.setSzerencse(Main.gameData.pakol.getSzerencse() - 1);
+            szerencse.setText("" + Main.gameData.pakol.getSzerencse());
+            Main.gameData.pakol.setArany(kivalasztottArany - vasarlas());
         }
-        egyenleg.setText("Egyenleg: " + Application.gameData.pakol.getArany() + " arany");
+        egyenleg.setText("Egyenleg: " + Main.gameData.pakol.getArany() + " arany");
     }
     //endregion
 
@@ -423,26 +428,26 @@ public class ShopController implements Initializable {
         }
         else {
 
-            Application.gameData.pakol.setTamadas(Integer.parseInt(tamadas.getText()));
-            Application.gameData.pakol.setVedekezes(Integer.parseInt(vedekezes.getText()));
-            Application.gameData.pakol.setVarazsero(Integer.parseInt(varazsero.getText()));
-            Application.gameData.pakol.setTudas(Integer.parseInt(tudas.getText()));
-            Application.gameData.pakol.setMoral(Integer.parseInt(moral.getText()));
-            Application.gameData.pakol.setSzerencse(Integer.parseInt(szerencse.getText()));
+            Main.gameData.pakol.setTamadas(Integer.parseInt(tamadas.getText()));
+            Main.gameData.pakol.setVedekezes(Integer.parseInt(vedekezes.getText()));
+            Main.gameData.pakol.setVarazsero(Integer.parseInt(varazsero.getText()));
+            Main.gameData.pakol.setTudas(Integer.parseInt(tudas.getText()));
+            Main.gameData.pakol.setMoral(Integer.parseInt(moral.getText()));
+            Main.gameData.pakol.setSzerencse(Integer.parseInt(szerencse.getText()));
 
-            Application.gameData.pakol.setElerhetoVarazslatok(villamcsapas.isSelected(), tuzlabda.isSelected(), feltamasztas.isSelected(), kotelbilincs.isSelected(), harcimamor.isSelected());
+            Main.gameData.pakol.setElerhetoVarazslatok(villamcsapas.isSelected(), tuzlabda.isSelected(), feltamasztas.isSelected(), kotelbilincs.isSelected(), harcimamor.isSelected());
 
-            Application.gameData.pakol.setEgysegek(Application.gameData.pakol, Integer.parseInt(foldmuves.getText()), Integer.parseInt(ijasz.getText()), Integer.parseInt(griff.getText()), Integer.parseInt(magus.getText()), Integer.parseInt(szupercsillagharcos.getText()));
+            Main.gameData.pakol.setEgysegek(Main.gameData.pakol, Integer.parseInt(foldmuves.getText()), Integer.parseInt(ijasz.getText()), Integer.parseInt(griff.getText()), Integer.parseInt(magus.getText()), Integer.parseInt(szupercsillagharcos.getText()));
 
-            Application.gameData.pakol.egysegek[0].setOsszHp(Application.gameData.pakol.egysegek[0].getHp() * Application.gameData.pakol.egysegek[0].getDb());
-            Application.gameData.pakol.egysegek[1].setOsszHp(Application.gameData.pakol.egysegek[1].getHp() * Application.gameData.pakol.egysegek[1].getDb());
-            Application.gameData.pakol.egysegek[2].setOsszHp(Application.gameData.pakol.egysegek[2].getHp() * Application.gameData.pakol.egysegek[2].getDb());
-            Application.gameData.pakol.egysegek[3].setOsszHp(Application.gameData.pakol.egysegek[3].getHp() * Application.gameData.pakol.egysegek[3].getDb());
-            Application.gameData.pakol.egysegek[4].setOsszHp(Application.gameData.pakol.egysegek[4].getHp() * Application.gameData.pakol.egysegek[4].getDb());
+            Main.gameData.pakol.egysegek[0].setOsszHp(Main.gameData.pakol.egysegek[0].getHp() * Main.gameData.pakol.egysegek[0].getDb());
+            Main.gameData.pakol.egysegek[1].setOsszHp(Main.gameData.pakol.egysegek[1].getHp() * Main.gameData.pakol.egysegek[1].getDb());
+            Main.gameData.pakol.egysegek[2].setOsszHp(Main.gameData.pakol.egysegek[2].getHp() * Main.gameData.pakol.egysegek[2].getDb());
+            Main.gameData.pakol.egysegek[3].setOsszHp(Main.gameData.pakol.egysegek[3].getHp() * Main.gameData.pakol.egysegek[3].getDb());
+            Main.gameData.pakol.egysegek[4].setOsszHp(Main.gameData.pakol.egysegek[4].getHp() * Main.gameData.pakol.egysegek[4].getDb());
 
-            Application.gameData.pakol.setMana(Application.gameData.pakol.getTudas() * 10);
+            Main.gameData.pakol.setMana(Main.gameData.pakol.getTudas() * 10);
 
-            FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("field.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("field.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setResizable(false);
