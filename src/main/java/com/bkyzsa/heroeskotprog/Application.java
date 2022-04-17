@@ -1,5 +1,6 @@
 package com.bkyzsa.heroeskotprog;
 
+import com.bkyzsa.heroeskotprog.units.Hos;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

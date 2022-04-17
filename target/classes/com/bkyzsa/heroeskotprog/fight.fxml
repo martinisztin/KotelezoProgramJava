@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bkyzsa.heroeskotprog.FightController">
+<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bkyzsa.heroeskotprog.controllers.FightController">
    <children>
        <Label fx:id="info" alignment="CENTER" contentDisplay="CENTER" layoutX="262.0" layoutY="83.0" prefHeight="25.0" prefWidth="477.0" text="Információ" textAlignment="CENTER" />
       <GridPane fx:id="field" alignment="CENTER" gridLinesVisible="true" layoutX="181.0" layoutY="118.0" prefHeight="460.0" prefWidth="640.0">
@@ -169,7 +169,7 @@
          </font>
       </Label>
        <Label fx:id="lpley" layoutX="39.0" layoutY="640.0" text="1. játékos" />
-       <Label fx:id="rpley" alignment="CENTER" layoutX="895.0" layoutY="640.0" prefHeight="17.0" prefWidth="82.0" text="COM játékos" textAlignment="CENTER" />
+       <Label fx:id="rpley" alignment="CENTER" layoutX="895.0" layoutY="640.0" prefHeight="17.0" prefWidth="82.0" text="2. játékos" textAlignment="CENTER" />
       <GridPane fx:id="nexts" gridLinesVisible="true" layoutX="262.0" layoutY="629.0" prefHeight="45.0" prefWidth="477.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -222,6 +222,18 @@
              <ImageView fx:id="saiyanImg" fitHeight="50.0" fitWidth="50.0" onMouseEntered="#hoverUnit" onMouseExited="#hoverOff" onMouseReleased="#feleleszt" pickOnBounds="true" preserveRatio="true" />
          </children>
       </VBox>
+      <VBox fx:id="rvarazslattarto" layoutX="771.0" layoutY="631.0" onMouseExited="#hoverVarazslasbol" prefHeight="124.0" prefWidth="100.0">
+         <children>
+            <Button fx:id="rvillamcsapas" mnemonicParsing="false" onMouseReleased="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Villámcsapás" />
+            <Button fx:id="rtuzlabda" mnemonicParsing="false" onMouseReleased="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Tűzlabda" />
+            <Button fx:id="rfeltamasztas" mnemonicParsing="false" onMouseReleased="#spellCast" prefHeight="25.0" prefWidth="102.0" text="Feltámasztás" />
+            <Button fx:id="rkotelbilincs" mnemonicParsing="false" onMouseReleased="#spellCast" prefHeight="25.0" prefWidth="105.0" text="Kötélbilincs" />
+            <Button fx:id="rharcimamor" mnemonicParsing="false" onMouseReleased="#spellCast" prefHeight="25.0" prefWidth="100.0" text="Harci mámor" />
+         </children>
+      </VBox>
+      <Button fx:id="rvarakozas" layoutX="877.0" layoutY="603.0" mnemonicParsing="false" onAction="#varakozas" prefHeight="25.0" prefWidth="100.0" text="Várakozás" />
+      <Button fx:id="rvarazslas" layoutX="877.0" layoutY="567.0" mnemonicParsing="false" onAction="#rvarazslas" prefHeight="25.0" prefWidth="100.0" text="Hős varázslás" />
+      <Button fx:id="rtamadas" layoutX="877.0" layoutY="530.0" mnemonicParsing="false" onAction="#hosTamadas" prefHeight="25.0" prefWidth="100.0" text="Hős támadás" />
 
    </children>
 </AnchorPane>

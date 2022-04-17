@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bkyzsa.heroeskotprog.FieldController">
+<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bkyzsa.heroeskotprog.controllers.FieldController">
    <children>
       <Label fx:id="info" alignment="CENTER" contentDisplay="CENTER" layoutX="263.0" layoutY="657.0" prefHeight="25.0" prefWidth="477.0" text="Információ" textAlignment="CENTER" />
       <GridPane fx:id="field" alignment="CENTER" gridLinesVisible="true" layoutX="181.0" layoutY="118.0" prefHeight="460.0" prefWidth="640.0">

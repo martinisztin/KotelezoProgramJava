@@ -1,5 +1,8 @@
 package com.bkyzsa.heroeskotprog;
 
+import com.bkyzsa.heroeskotprog.units.Egyseg;
+import com.bkyzsa.heroeskotprog.units.Hos;
+
 public class DataContainer {
     public Hos lplayer, rplayer;
     public boolean multiplayer;
