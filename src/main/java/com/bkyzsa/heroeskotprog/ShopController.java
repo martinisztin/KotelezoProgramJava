@@ -439,6 +439,8 @@ public class ShopController implements Initializable {
             Application.gameData.lplayer.egysegek[3].setOsszHp(Application.gameData.lplayer.egysegek[3].getHp() * Application.gameData.lplayer.egysegek[3].getDb());
             Application.gameData.lplayer.egysegek[4].setOsszHp(Application.gameData.lplayer.egysegek[4].getHp() * Application.gameData.lplayer.egysegek[4].getDb());
 
+            Application.gameData.lplayer.setMana(Application.gameData.lplayer.getTudas() * 10);
+
             FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("field.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

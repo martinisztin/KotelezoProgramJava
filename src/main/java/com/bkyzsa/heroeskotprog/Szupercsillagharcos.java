@@ -7,4 +7,8 @@ public class Szupercsillagharcos extends Egyseg {
     }
 
 
+    @Override
+    public void kepesseg() {
+        //TODO 50% ESÉLY KITÉRÉSRE
+    }
 }

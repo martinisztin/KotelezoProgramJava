@@ -6,5 +6,8 @@ public class Foldmuves extends Egyseg {
         super("foldmuves", db, 2, 1, 1, 3, 4, 8, "nincs", gazda);
     }
 
-    //nemtom mit tud funkcionalni egyelore
+    @Override
+    public void kepesseg() {
+
+    }
 }

@@ -264,6 +264,8 @@ public class FieldController implements Initializable {
         Application.gameData.rplayer.egysegek[3].setOsszHp(Application.gameData.rplayer.egysegek[3].getHp() * Application.gameData.rplayer.egysegek[3].getDb());
         Application.gameData.rplayer.egysegek[4].setOsszHp(Application.gameData.rplayer.egysegek[4].getHp() * Application.gameData.rplayer.egysegek[4].getDb());
 
+        Application.gameData.rplayer.setMana(Application.gameData.rplayer.getTudas() * 10);
+
         //we got 0 gold
         System.out.println(Application.gameData.rplayer.getArany() - (fold * 2));
 

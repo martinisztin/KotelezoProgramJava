@@ -10,6 +10,6 @@ public class Feltamasztas extends Varazslat {
 
     @Override
     public String toString() {
-        return getLeiras() + "\nÚjraélesztés hatása: maximum (varázserő * " + getSebzes() + ") életerő\nMana költség: " + getManacost() + " mana\nÁr: " + getAr();
+        return getLeiras() + "\nÚjraélesztés hatása: maximum (varázserő * " + getSebzes() + ") életerő\nMana költség: " + getManaCost() + " mana\nÁr: " + getAr();
     }
 }

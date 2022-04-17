@@ -130,8 +130,8 @@ public class FightController implements Initializable {
     Button[] varazslatok;
     ImageView[] felelesztos;
 
-    Egyseg[] lplayerUnits;
-    Egyseg[] rplayerUnits;
+    int[] lplayerUnits;
+    int[] rplayerUnits;
     Egyseg[][] startMap;
 
     private int currentSorszam = -1;
@@ -150,19 +150,13 @@ public class FightController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-
-        //eltároljuk az eredetit hogy tudjunk felfele oszlopot játszani
-        lplayerUnits = Application.gameData.lplayer.egysegek;
-        rplayerUnits = Application.gameData.rplayer.egysegek;
-        startMap = Application.gameData.map;
-
         lvillamcsapas.setText("Villámcsapás");
         ltuzlabda.setText("Tűzlabda");
         lfeltamasztas.setText("Feltámasztás");
         lkotelbilincs.setText("Kötélbilincs");
         lharcimamor.setText("Harci mámor");
 
-        varazslatok = new Button[]{lvillamcsapas, ltuzlabda, lfeltamasztas, lkotelbilincs, lharcimamor};
+        varazslatok = new Button[] {lvillamcsapas, ltuzlabda, lfeltamasztas, lkotelbilincs, lharcimamor};
 
 
         for(int i = 0; i<varazslatok.length; i++) {
@@ -173,7 +167,7 @@ public class FightController implements Initializable {
 
         notnull = new Image("file:img/notnull.png");
 
-        actions  = new Button[]{ltamadas, lvarakozas, lvarazslas};
+        actions = new Button[]{ltamadas, lvarakozas, lvarazslas};
 
         ColorAdjust monochrome = new ColorAdjust();
         monochrome.setSaturation(-1.0);
@@ -191,6 +185,24 @@ public class FightController implements Initializable {
         p1szin = new Blend(BlendMode.OVERLAY, monochrome, new ColorInput(0,0,52,45,Color.BLUE));
         p2szin = new Blend(BlendMode.OVERLAY, monochrome, new ColorInput(0,0,52,45,Color.ORANGE));
 
+        //eltároljuk az eredetit hogy tudjunk felfele oszlopot játszani
+
+
+        lplayerUnits = new int[Application.gameData.lplayer.egysegek.length];
+        rplayerUnits = new int[Application.gameData.rplayer.egysegek.length];
+        startMap = new Egyseg[10][12];
+
+        for (int i = 0; i < 5; i++) {
+            int rakosGeci = Application.gameData.lplayer.egysegek[i].getDb(), anyad = Application.gameData.rplayer.egysegek[i].getDb();
+            lplayerUnits[i] = rakosGeci;
+            rplayerUnits[i] = anyad;
+        }
+
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 12; j++) {
+                startMap[i][j] = Application.gameData.map[i][j];
+            }
+        }
 
         for (Node node: field.getChildren()) {
             if(node instanceof ImageView) {
@@ -228,13 +240,18 @@ public class FightController implements Initializable {
 
         for(ImageView iw : felelesztos) {
             iw.setDisable(true);
+            iw.setOpacity(0.5);
         }
+
+        lfeltamaszto.setOpacity(0);
+        lfeltamaszto.setDisable(true);
+
 
         player1.setImage(hosimg);
         player2.setImage(hosimg);
 
-        lmana.setText(Application.gameData.lplayer.getTudas() * 10 + " mana");
-        rmana.setText(Application.gameData.rplayer.getTudas() * 10 + " mana");
+        lmana.setText(Application.gameData.lplayer.getMana() + " mana");
+        rmana.setText(Application.gameData.rplayer.getMana() + " mana");
 
         kor.setText("1. kör");
 
@@ -493,8 +510,23 @@ public class FightController implements Initializable {
         //ott ugye a kovetkezo sorszamu unit tamad, mert ahelyett tamadt a hos i guess, szoval azt is le kell kezelni
     }
 
+    //TODO befejezés
     @FXML
-    public void skillCast(MouseEvent event) {
+    public void spellCast(MouseEvent event) {
+
+        //töröljük a jelöléseket justincase
+        for (Node node : field.getChildren()) {
+            //lepheto mezok
+            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && (node.getEffect() == lepheto)) {
+                node.setEffect(null);
+            }
+            //a soron levo unit mar nincs soron!!
+            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && node.getEffect() == tamadhato) {
+                node.setEffect(null);
+            }
+        }
+
+
         //a tanult modon kijeloljuk az enemy szarjait
         //uthetove tesszuk, bar ezt pihentebben atgondolva lehet mashova rakom
 
@@ -503,7 +535,7 @@ public class FightController implements Initializable {
         //szoval egy enemytarget function nagy lenne es kb csak at kene passzolni a boolt / global var
         //ugyis van mindegyik gombnak idje szoval majd egy giga switch case megoldja a bajt
 
-        switch(((ImageView)event.getSource()).getId()) {
+        switch(((Button)event.getSource()).getId()) {
             case "lvillamcsapas" -> villamcsapasTamad = true;
             case "ltuzlabda" ->tuzlabdaTamad = true;
             case "lfeltamasztas" -> feltamasztasTamad = true;
@@ -535,17 +567,21 @@ public class FightController implements Initializable {
         if(feltamasztasTamad) {
             Hos caster = Application.gameData.pakol;
 
+            System.out.println("bejottem feltamasztani");
 
-
+            lfeltamaszto.setOpacity(1);
+            lfeltamaszto.setDisable(false);
 
             //menjunk vegig az unitokon es nezzuk melyik halott, eltarolas jokerdes
-            if(Application.gameData.pakol == Application.gameData.lplayer) {
+            if(caster == Application.gameData.lplayer) {
                 for(int i = 0; i < caster.egysegek.length; i++) {
-                    if(caster.egysegek[i].getDb() == 0 && lplayerUnits[i].getDb() != 0) {
+                    if(caster.egysegek[i].getDb() == 0 && lplayerUnits[i] != 0) {
                         for(Node node : lfeltamaszto.getChildren()) {
                             if(node instanceof ImageView) {
+                                System.out.println(caster.egysegek[i].getNev() + "Img");
                                 if(Objects.equals(node.getId(), caster.egysegek[i].getNev() + "Img")) {
-                                    ((ImageView)node).setDisable(false);
+                                    node.setDisable(false);
+                                    node.setOpacity(1);
                                 }
                             }
                         }
@@ -554,9 +590,219 @@ public class FightController implements Initializable {
             }
 
         }
+        if(kotelblilincsTamad) {
+            for(Node node : field.getChildren()) {
+                for(int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        if(Application.gameData.map[i][j] != null && Application.gameData.map[i][j].getGazda() != Application.gameData.pakol) {
+                            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
+                                    GridPane.getRowIndex(node) == i && GridPane.getColumnIndex(node) == j) {
+                                node.setEffect(tamadhato);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if(harcimamorTamad) {
+            //actually semmi
+        }
 
     }
 
+    private void jelolesTorlese() {
+        for (Node node : field.getChildren()) {
+            //lepheto mezok
+            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && (node.getEffect() == lepheto)) {
+                node.setEffect(null);
+            }
+            //a soron levo unit mar nincs soron!!
+            if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && (node.getEffect() == valasztott || node.getEffect() == tamadhato)) {
+                node.setEffect(null);
+            }
+        }
+    }
+
+    @FXML
+    public void feleleszt(MouseEvent event) {
+        //töröljük a csöves jelöléseket
+        jelolesTorlese();
+
+
+        //ha rakattintasz akkor legyen halott ez pl ellenorizheto opacitasbol like a boss
+        if(((Node)event.getSource()).getOpacity() == 1) {
+            if(Application.gameData.lplayer.getMana() < Application.gameData.lplayer.elerhetoVarazslatok[2].getManaCost()) {
+                info.setText("Túl kevés mana a varázsláshoz!");
+                return;
+            }
+            else {
+                Application.gameData.lplayer.setMana(Application.gameData.lplayer.getMana() - Application.gameData.lplayer.elerhetoVarazslatok[2].getManaCost());
+                lmana.setText(Application.gameData.lplayer.getMana() + " mana");
+            }
+
+            String id = "";
+            //mire nyomtál
+            switch(((Node)event.getSource()).getId()) {
+                case "foldmuvesImg" -> {
+                    Application.gameData.lplayer.egysegek[0].setDb(lplayerUnits[0]);
+                    int maxHeal = Application.gameData.lplayer.getVarazsero() * 50;
+                    int baseHp = Application.gameData.lplayer.egysegek[0].getHp() * Application.gameData.lplayer.egysegek[0].getDb();
+                    if(maxHeal > baseHp)
+                        Application.gameData.lplayer.egysegek[0].setOsszHp(baseHp);
+                    else {
+                        Application.gameData.lplayer.egysegek[0].setOsszHp(maxHeal);
+                    }
+                    for(Node node : field.getChildren()) {
+                        if(node instanceof ImageView) {
+                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == 0
+                            && node.getId() == null) {
+                                //rakd le ezt a SZART
+                                ((ImageView)node).setImage(foldmuves);
+                                node.setId("l" + Application.gameData.lplayer.egysegek[0].getNev());
+
+                                //most a mapra
+                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.lplayer.egysegek[0];
+                                break;
+
+                            }
+                        }
+                    }
+                }
+                case "ijaszImg" -> {
+                    Application.gameData.lplayer.egysegek[1].setDb(lplayerUnits[1]);
+                    int maxHeal = Application.gameData.lplayer.getVarazsero() * 50;
+                    int baseHp = Application.gameData.lplayer.egysegek[1].getHp() * Application.gameData.lplayer.egysegek[1].getDb();
+                    if(maxHeal > baseHp)
+                        Application.gameData.lplayer.egysegek[1].setOsszHp(baseHp);
+                    else {
+                        Application.gameData.lplayer.egysegek[1].setOsszHp(maxHeal);
+                    }
+                    for(Node node : field.getChildren()) {
+                        if(node instanceof ImageView) {
+                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == 0
+                                    && node.getId() == null) {
+                                //rakd le ezt a SZART
+                                ((ImageView)node).setImage(foldmuves);
+                                node.setId("l" + Application.gameData.lplayer.egysegek[1].getNev());
+
+                                //most a mapra
+                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.lplayer.egysegek[1];
+                                break;
+                            }
+                        }
+                    }
+                }
+                case "griffImg" -> {
+                    Application.gameData.lplayer.egysegek[2].setDb(lplayerUnits[2]);
+                    int maxHeal = Application.gameData.lplayer.getVarazsero() * 50;
+                    int baseHp = Application.gameData.lplayer.egysegek[2].getHp() * Application.gameData.lplayer.egysegek[2].getDb();
+                    if(maxHeal > baseHp)
+                        Application.gameData.lplayer.egysegek[2].setOsszHp(baseHp);
+                    else {
+                        Application.gameData.lplayer.egysegek[2].setOsszHp(maxHeal);
+                    }
+                    for(Node node : field.getChildren()) {
+                        if(node instanceof ImageView) {
+                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == 0
+                                    && node.getId() == null) {
+                                //rakd le ezt a SZART
+                                ((ImageView)node).setImage(foldmuves);
+                                node.setId("l" + Application.gameData.lplayer.egysegek[2].getNev());
+
+                                //most a mapra
+                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.lplayer.egysegek[2];
+                                break;
+                            }
+                        }
+                    }
+                }
+                case "magusImg" -> {
+                    Application.gameData.lplayer.egysegek[3].setDb(lplayerUnits[3]);
+                    int maxHeal = Application.gameData.lplayer.getVarazsero() * 50;
+                    int baseHp = Application.gameData.lplayer.egysegek[3].getHp() * Application.gameData.lplayer.egysegek[3].getDb();
+                    if(maxHeal > baseHp)
+                        Application.gameData.lplayer.egysegek[3].setOsszHp(baseHp);
+                    else {
+                        Application.gameData.lplayer.egysegek[3].setOsszHp(maxHeal);
+                    }
+                    for(Node node : field.getChildren()) {
+                        if(node instanceof ImageView) {
+                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == 0
+                                    && node.getId() == null) {
+                                //rakd le ezt a SZART
+                                ((ImageView)node).setImage(foldmuves);
+                                node.setId("l" + Application.gameData.lplayer.egysegek[3].getNev());
+
+                                //most a mapra
+                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.lplayer.egysegek[3];
+                                break;
+                            }
+                        }
+                    }
+                }
+                case "saiyanImg" -> {
+                    Application.gameData.lplayer.egysegek[4].setDb(lplayerUnits[4]);
+                    int maxHeal = Application.gameData.lplayer.getVarazsero() * 50;
+                    int baseHp = Application.gameData.lplayer.egysegek[4].getHp() * Application.gameData.lplayer.egysegek[4].getDb();
+                    if(maxHeal > baseHp)
+                        Application.gameData.lplayer.egysegek[4].setOsszHp(baseHp);
+                    else {
+                        Application.gameData.lplayer.egysegek[4].setOsszHp(maxHeal);
+                    }
+                    for(Node node : field.getChildren()) {
+                        if(node instanceof ImageView) {
+                            if(GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) == 0
+                                    && node.getId() == null) {
+                                //rakd le ezt a SZART
+                                ((ImageView)node).setImage(foldmuves);
+                                node.setId("l" + Application.gameData.lplayer.egysegek[4].getNev());
+
+                                //most a mapra
+                                Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Application.gameData.lplayer.egysegek[4];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentsr = handleSorrend(sorrendezo());
+
+            feltamasztasTamad = false;
+            lfeltamaszto.setOpacity(0);
+            lfeltamaszto.setDisable(true);
+            kovetkezo();
+
+        }
+
+    }
+
+    @FXML
+    public void felelesztEltuntetese(MouseEvent event) {
+        lfeltamaszto.setOpacity(0);
+        lfeltamaszto.setDisable(true);
+    }
+
+    @FXML
+    public void harcimamor(MouseEvent event) {
+        //TODO implement
+
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 12; j++) {
+                if(Application.gameData.map[i][j].getGazda() == Application.gameData.pakol) {
+                    Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() + Application.gameData.pakol.getVarazsero() * 3);
+                    Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() + Application.gameData.pakol.getVarazsero() * 3);
+
+                    harcimamorTamad = true;
+                    Application.gameData.pakol.setHarciMamorAktiv(true);
+                    details1.setText(Application.gameData.pakol == Application.gameData.lplayer ? "< " : "" + "A harci mámor ebben a körben aktiválva lett." + (Application.gameData.pakol == Application.gameData.rplayer ? " >" : ""));
+                }
+            }
+        }
+
+    }
 
 
     @FXML
@@ -600,34 +846,109 @@ public class FightController implements Initializable {
     }
 
     private void kovetkezo() {
-        int highestKezd = 0;
-        String highestKezdName = "";
-        boolean megvan = false;
+        Egyseg elozo = null;
+        if(currentSorszam > -1) {
+            elozo = currentsr[currentSorszam];
+        }
+
         currentsr = handleSorrend(currentsr);
 
         if(currentsr.length > currentSorszam)
             currentSorszam++;
 
-        for(Egyseg e: currentsr) {
-            System.out.println(e.getNev());
-        }
+        //agyfaszt kapok geci
+        if(elozo != null && elozo != currentsr[currentSorszam - 1])
+            currentSorszam--;
 
 
-        //System.out.println("\n\n\n");
-        //for(Egyseg e : currentsr) {
-            //if(e != null)
-                //System.out.println(e.getNev());
-        //}
         if(currentSorszam == currentsr.length) {
             currentSorszam = 0;
             kor.setText(++Application.gameData.kor + ". kör");
+
+            for(Egyseg e : currentsr) {
+                if(e != null)
+                    e.setVisszatamadtAKorben(false);
+            }
+
+            //region harcimámor kikapcsolás
+            if(Application.gameData.lplayer.isHarciMamorAktiv()) {
+                for(int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        if(Application.gameData.map[i][j].getGazda() == Application.gameData.lplayer) {
+                            Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() - Application.gameData.lplayer.getVarazsero() * 3);
+                            Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() - Application.gameData.lplayer.getVarazsero() * 3);
+
+                            harcimamorTamad = false;
+                            Application.gameData.lplayer.setHarciMamorAktiv(false);
+                        }
+                    }
+                }
+            }
+
+            if(Application.gameData.rplayer.isHarciMamorAktiv()) {
+                for(int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        if(Application.gameData.map[i][j].getGazda() == Application.gameData.rplayer) {
+                            Application.gameData.map[i][j].setSebzesinterval1(Application.gameData.map[i][j].getSebzesinterval1() - Application.gameData.rplayer.getVarazsero() * 3);
+                            Application.gameData.map[i][j].setSebzesinterval2(Application.gameData.map[i][j].getSebzesinterval2() - Application.gameData.rplayer.getVarazsero() * 3);
+
+                            harcimamorTamad = false;
+                            Application.gameData.rplayer.setHarciMamorAktiv(false);
+                        }
+                    }
+                }
+            }
+            //endregion
         }
 
-        if(currentsr[currentSorszam].getDb() == 0) {
+
+        //region kötélbilincs kikapcsolás
+        if(currentsr[currentSorszam].isKimarad()) {
+            currentsr[currentSorszam].setKimarad(false);
+            kovetkezo();
+        }
+        //endregion
+
+        //region nyertél
+        int lEloEgysegek = 0, rEloEgysegek = 0;
+
+        for(int i = 0; i < 10; i++) {
+            for (int j = 0; j < 12; j++) {
+                if(Application.gameData.map[i][j] != null) {
+                    if(Application.gameData.map[i][j].getGazda() == Application.gameData.lplayer)
+                        lEloEgysegek++;
+                    if(Application.gameData.map[i][j].getGazda() == Application.gameData.rplayer)
+                        rEloEgysegek++;
+                }
+            }
+        }
+
+        if(lEloEgysegek != 0 && rEloEgysegek == 0) {
+            details.setText("1. játékos nyert!");
+        }
+        else if (lEloEgysegek == 0 && rEloEgysegek != 0)
+        {
+            details.setText(Application.gameData.multiplayer ? "2. játékos nyert!" : "BOT játékos nyert!");
+        }
+        else if(lEloEgysegek == 0 && rEloEgysegek == 0) {
+            details.setText("A meccs döntetlennel zárult.");
+        }
+
+
+        //endregion
+
+
+        //region magus kepesseg (makes no sense kind of meghivas)
+        if(Objects.equals(currentsr[currentSorszam].getNev(), "ijasz")) {
+            currentsr[currentSorszam].kepesseg();
+        }
+        //endregion
+
+        /*if(currentsr[currentSorszam].getDb() == 0) {
             if(currentSorszam == currentsr.length)
             currentSorszam++;
             kovetkezo();
-        }
+        }*/
 
 
         //dont ask miert 2 function
@@ -687,42 +1008,32 @@ public class FightController implements Initializable {
         details1.setText("");
         //endregion
 
-        //region Hova léphet az úr illetve kiket támadhat? TODO FIX
+
+
+        //region Hova léphet az úr illetve kiket támadhat?
         if(((Node)event.getSource()).getEffect() == valasztott) {
+            Egyseg egyseg = Application.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())];
             for (Node node : field.getChildren()) {
                 if(node instanceof ImageView) {
-                    if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && node.getId() == null) {
-                        int y = GridPane.getRowIndex((Node)event.getSource());
+                    if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
+                        Egyseg enemy = Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)];
                         int x = GridPane.getColumnIndex((Node)event.getSource());
-                        for(int i = x - GridPane.getColumnIndex(node); i <= x + GridPane.getColumnIndex(node); i++) {
-                            for(int j = y - GridPane.getRowIndex(node); j <= y + GridPane.getRowIndex(node); j++) {
-                                //if(i >= 0 && j >= 0 && i < 12 && j < 10) {
-                                if(Math.abs(i - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) <= currentsr[currentSorszam].getSebesseg()) {
+                        int y = GridPane.getRowIndex((Node)event.getSource());
+
+                        if(Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) <= currentsr[currentSorszam].getSebesseg()
+                            && Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] == null)
                                     (node).setEffect(lepheto);
-                                    //  }
-                                }
-                            }
-                        }
-                    }
-                    if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && node.getId() != null && !node.getId().substring(0,1).equals(prefix)) {
-                        int y = GridPane.getRowIndex((Node)event.getSource());
-                        int x = GridPane.getColumnIndex((Node)event.getSource());
-                        for(int i = x - GridPane.getColumnIndex(node); i <= x + GridPane.getColumnIndex(node); i++) {
-                            for(int j = y - GridPane.getRowIndex(node); j <= y + GridPane.getRowIndex(node); j++) {
-                                //if(i >= 0 && j >= 0 && i < 12 && j < 10) {
-                                if(Math.abs(i - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) <= currentsr[currentSorszam].getSebesseg()) {
-                                    (node).setEffect(tamadhato);
-                                    unitTamad = true;
-                                    //  }
-                                }
-                            }
-                        }
-                    }
 
+                        if(enemy != null && enemy.getGazda() != egyseg.getGazda() && (Math.abs(x - GridPane.getColumnIndex(node)) + Math.abs(y - GridPane.getRowIndex(node)) == 1 || egyseg.isTavolHarci())) {
+                            (node).setEffect(tamadhato);
+                            unitTamad = true;
+                        }
+                    }
                 }
-
             }
+
         }
+
         //endregion
 
         //region ACTION: lépés
@@ -754,17 +1065,7 @@ public class FightController implements Initializable {
             }
 
             //reset mezőszínek
-            for (Node node : field.getChildren()) {
-                //lepheto mezok
-                if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && (node.getEffect() == lepheto)) {
-                    node.setEffect(null);
-                }
-                //a soron levo unit mar nincs soron!!
-                if(GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null && (node.getEffect() == valasztott || node.getEffect() == tamadhato)) {
-                    node.setEffect(null);
-
-                }
-            }
+            jelolesTorlese();
 
             //mivel action ezért ez a unit mar nem tud mast csinalni a korben
             //currentSorszam++;
@@ -911,14 +1212,41 @@ public class FightController implements Initializable {
                     dmgback = (int) Math.round(unitDmgBack) / 2;
                     System.out.println("visszaküldött dmg: " + dmgback);
 
-
+                    boolean kikeruli = false;
+                    boolean visszaTamadasJelzoGepKetezer = false;
                     //először az odatámadást vesszük fel
-                    Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(megtamadott.getOsszHp() - dmg);
-                    //nézzük meg hogy Halt-e.
-                    boolean visszaTamadasJelzoGepKetezer = unitHalt(event, szenvedoUnit, dmg, crit);
+
+                    //region saiyan skill
+                    if(Objects.equals(megtamadott.getNev(), "szupercsillagharcos")) {
+                        kikeruli = 100 * ((double)rnd.nextInt(100) / 100) < 50;
+                    }
+                    if(!kikeruli)
+                    {
+                        Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].setOsszHp(megtamadott.getOsszHp() - dmg);
+                        //nézzük meg hogy Halt-e.
+                        visszaTamadasJelzoGepKetezer = unitHalt(event, szenvedoUnit, dmg, crit);
+                    }
+                    else {
+                        details.setText(szenvedoUnit + " KIKERÜLTE A TÁMADÁST!!!!!");
+                    }
+                    //endregion
+
+                    //region griff skill
+                    if(Objects.equals(megtamadott.getNev(), "griff")) {
+                        megtamadott.kepesseg();
+                    }
+                    //endregion
+
+                    //region magus skill
+
+                    if(Objects.equals(currentsr[currentSorszam].getNev(), "magus")) {
+                        currentsr[currentSorszam].setOsszHp(currentsr[currentSorszam].getOsszHp() + Application.gameData.pakol.getVarazsero() * 5);
+                    }
+
+                    //endregion
 
                     //visszatámadás momento
-                    if (!visszaTamadasJelzoGepKetezer) {
+                    if (!visszaTamadasJelzoGepKetezer && !megtamadott.isVisszatamadtAKorben()) {
                         int row = 0;
                         int col = 0;
                         for (int i = 0; i < 10; i++) {
@@ -933,6 +1261,7 @@ public class FightController implements Initializable {
                         }
                         if (Application.gameData.map[row][col] != null) {
                             Application.gameData.map[row][col].setOsszHp(Application.gameData.map[row][col].getOsszHp() - dmgback);
+                            megtamadott.setVisszatamadtAKorben(true);
                             //nézzük meg hogy Halt-e.
                             if (Application.gameData.map[row][col].getOsszHp() <= 0) {
 
@@ -1006,6 +1335,76 @@ public class FightController implements Initializable {
             }
             //endregion
 
+            //region villámcsapás támad
+            if(villamcsapasTamad) {
+                if(megtamadott != null && Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[0].getManaCost()) {
+                    megtamadott.setOsszHp(megtamadott.getOsszHp() - Application.gameData.pakol.getVarazsero() * 30);
+                    Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - 5);
+                    details.setText(szenvedoUnit + " meg lett villámcsapva! " + Application.gameData.pakol.getVarazsero() * 30 + " sebzést szenvedett.");
+                    lmana.setText(Application.gameData.lplayer.getMana() + " mana");
+                    rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                }
+                else {
+                    details.setText("Túl kevés mana a varázsláshoz!");
+                }
+                villamcsapasTamad = false;
+
+                jelolesTorlese();
+
+                kovetkezo();
+            }
+            //endregion
+
+            //region tűzlabda támad
+            if(tuzlabdaTamad) {
+                //kéne a pont ami a közepe
+                if(Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[1].getManaCost()) {
+                    int x = GridPane.getRowIndex((Node)event.getSource());
+                    int y = GridPane.getColumnIndex((Node)event.getSource());
+
+                    for(int i = Math.max(0, x - 1); i < Math.min(x + 1, 11); i++) {
+                        for(int j = Math.max(0, y - 1); j < Math.min(y + 1, 9); j++) {
+                            if(Application.gameData.map[i][j] != null) {
+                                Application.gameData.map[i][j].setOsszHp(Application.gameData.map[i][j].getOsszHp() - Application.gameData.pakol.getVarazsero() * 20);
+                            }
+                        }
+                    }
+                    Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - Application.gameData.pakol.elerhetoVarazslatok[1].getManaCost());
+                    lmana.setText(Application.gameData.lplayer.getMana() + " mana");
+                    rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                    details.setText("TŰZLABDAAAAAAAAA!");
+                } else {
+                    details.setText("Túl kevés mana a varázsláshoz!");
+                }
+                tuzlabdaTamad = false;
+                jelolesTorlese();
+                kovetkezo();
+            }
+            //endregion
+
+            //region kötélbilincs támad
+            if(kotelblilincsTamad) {
+                if(Application.gameData.pakol.getMana() > Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost()) {
+                    Application.gameData.map[GridPane.getRowIndex((Node)event.getSource())][GridPane.getColumnIndex((Node)event.getSource())].setKimarad(true);
+                }
+                else {
+                    details.setText("Túl kevés mana a varázsláshoz!");
+                }
+
+                Application.gameData.pakol.setMana(Application.gameData.pakol.getMana() - Application.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
+                lmana.setText(Application.gameData.lplayer.getMana() + " mana");
+                rmana.setText(Application.gameData.rplayer.getMana() + " mana");
+                kotelblilincsTamad = false;
+
+                jelolesTorlese();
+
+                kovetkezo();
+
+            }
+
+
+            //endregion
+
 
         }
         //endregion
@@ -1038,7 +1437,7 @@ public class FightController implements Initializable {
         //nem halt szoval csak frissitsuk az infokat
         else {
             //darabszam
-            details.setText("HŐS SEBZÉS! "+ dmg + (crit ? "KRITKUS" : "") + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
+            details.setText("EGYSÉG SEBZÉS! "+ dmg + (crit ? "KRITKUS" : "") + " sebzés került kiosztásra " + szenvedoUnit + " egységnek " + (Application.gameData.pakol == Application.gameData.lplayer ? "1. játékos" : (Application.gameData.multiplayer ? "2. játékos" : "BOT játékos")) + " által!");
 
             boolean vanserult = Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getOsszHp() % Application.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())].getHp() != 0;
 
