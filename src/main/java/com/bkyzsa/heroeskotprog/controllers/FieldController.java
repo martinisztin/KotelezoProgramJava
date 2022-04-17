@@ -180,7 +180,21 @@ public class FieldController implements Initializable {
                 if(felkeszules && GridPane.getRowIndex(node) == GridPane.getRowIndex((Node)event.getSource()) && GridPane.getColumnIndex(node) == GridPane.getColumnIndex((Node)event.getSource())
                 && ((ImageView)node).getImage().getUrl().contains("chooseable")) {
                     ((ImageView)event.getSource()).setImage(new Image("file:img/" + kattintott.getNev() + ".png"));
+
+                    //ha van ki kene torolni az elozo helyen
+                    for(int i = 0; i < 10; i++) {
+                        for (int j = 0; j < 12; j++) {
+                            if(Application.gameData.map[i][j] == kattintott) {
+                                Application.gameData.map[i][j] = null;
+                                break;
+                            }
+                        }
+                    }
+
                     Application.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = kattintott;
+
+
+
                     rakott = true;
                     System.out.println(kattintott.getNev() + " " + kattintott.getDb());
                 }
