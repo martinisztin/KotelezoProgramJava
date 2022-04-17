@@ -44,6 +44,6 @@ A két extra egység:
 - Mágus: a mágus támadások után gyógyítja magát legfeljebb varázserő * 5 életerővel, viszont ha max. életerőn van,
 akkor nem gyógyul tovább
 - Szupercsillagharcos: a legendás Szupercsillagharcosok 50% eséllyel kivédik a beérkező támadást.
-Drága, de jó használat mellett igazán broken.
+Drága, de jó használat mellett igazán overpowered.
 
 **Jó tesztelést!**
