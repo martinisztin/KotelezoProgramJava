@@ -2,6 +2,12 @@ package com.bkyzsa.heroeskotprog.units;
 
 import com.bkyzsa.heroeskotprog.spells.*;
 
+/**
+ * A Hős osztálya.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class Hos {
     private int tamadas, vedekezes, varazsero, tudas, moral, szerencse, arany, mana;
     public int statuszAr;

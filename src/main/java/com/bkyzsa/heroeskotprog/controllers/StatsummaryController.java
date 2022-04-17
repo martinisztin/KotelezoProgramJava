@@ -16,6 +16,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * A statsummary.fxml controller osztálya. A harc előtt megtekinthetővé teszi a két játékos tulajdonságainak eloszlását.
+ * Ezekben a controllerekben találhatók a grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class StatsummaryController implements Initializable {
 
     @FXML

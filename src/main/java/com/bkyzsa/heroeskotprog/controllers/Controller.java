@@ -13,6 +13,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * A legelső (difficulty.fxml) controller osztálya. Ezekben a controllerekben találhatók a
+ * grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class Controller {
 
     @FXML

@@ -22,6 +22,13 @@ import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+/**
+ * A field.fxml controller osztálya. Tartalmazza a játékbeli csata taktikai felállításának megvalósítását.
+ * Ezekben a controllerekben találhatók a grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class FieldController implements Initializable {
 
     @FXML

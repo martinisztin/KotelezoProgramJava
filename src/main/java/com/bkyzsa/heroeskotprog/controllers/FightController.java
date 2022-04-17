@@ -29,6 +29,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * A fight.fxml controller osztálya. Tartalmazza a játékbeli csata teljes harcrendszerének megvalósítását.
+ * Ezekben a controllerekben találhatók a grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class FightController implements Initializable {
 
     @FXML
@@ -507,7 +514,7 @@ public class FightController implements Initializable {
                 case "lgriff" -> output = Main.gameData.lplayer.egysegek[2].getDb() + " db Griff\nÉleterejük: "
                         + Main.gameData.lplayer.egysegek[2].getOsszHp() + ", ebből "
                         +  ((Main.gameData.lplayer.egysegek[2].getOsszHp() / Main.gameData.lplayer.egysegek[2].getHp()) == Main.gameData.lplayer.egysegek[2].getDb()
-                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[2].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek"
+                        ? "mindenki, azaz " + Main.gameData.lplayer.egysegek[2].getDb() + " db sértetlen" : Main.gameData.lplayer.egysegek[2].getDb() - 1 + " sértetlen, és egynek "
                         + Main.gameData.lplayer.egysegek[2].getOsszHp() % Main.gameData.lplayer.egysegek[2].getHp() + " életereje van")
                         + "\nSebzés: " + Main.gameData.lplayer.egysegek[2].getSebzesinterval1() + "-" + Main.gameData.lplayer.egysegek[2].getSebzesinterval2();
 
@@ -817,7 +824,8 @@ public class FightController implements Initializable {
             }
             else {
                 Main.gameData.pakol.setMana(Main.gameData.pakol.getMana() - Main.gameData.pakol.elerhetoVarazslatok[2].getManaCost());
-                lmana.setText(Main.gameData.pakol.getMana() + " mana");
+                lmana.setText(Main.gameData.lplayer.getMana() + " mana");
+                rmana.setText(Main.gameData.rplayer.getMana() + " mana");
             }
 
             int col = 0;
@@ -827,6 +835,12 @@ public class FightController implements Initializable {
             //mire nyomtál
             switch(((Node)event.getSource()).getId()) {
                 case "foldmuvesImg" -> {
+                    if(Main.gameData.pakol == Main.gameData.lplayer) {
+                        Main.gameData.pakol.egysegek[0].setDb(lplayerUnits[0]);
+                    }
+                    else {
+                        Main.gameData.pakol.egysegek[0].setDb(rplayerUnits[0]);
+                    }
                     int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
                     int baseHp = Main.gameData.pakol.egysegek[0].getHp() * Main.gameData.pakol.egysegek[0].getDb();
                     boolean halott = false;
@@ -836,25 +850,12 @@ public class FightController implements Initializable {
 
                     if(halott) {
                         Main.gameData.pakol.egysegek[0].setOsszHp(Math.min(maxHeal, baseHp));
-                        boolean vanserult = Main.gameData.pakol.egysegek[0].getOsszHp() % Main.gameData.pakol.egysegek[0].getHp() != 0;
-                        Main.gameData.pakol.egysegek[0].setDb(Main.gameData.pakol.egysegek[0].getOsszHp() / Main.gameData.pakol.egysegek[0].getHp() + (vanserult ? 1 : 0));
                         details.setText("A kiválaszott egység fel lett támasztva! Új életereje: " + Main.gameData.pakol.egysegek[0].getOsszHp());
                     } else {
-                        int hianyzo = 0;
-                        if(Main.gameData.pakol == Main.gameData.lplayer) {
-                            hianyzo = Main.gameData.pakol.egysegek[0].getHp() * lplayerUnits[0] - Main.gameData.pakol.egysegek[0].getOsszHp();
-                            if(hianyzo > maxHeal)
-                                hianyzo = maxHeal;
-                        }
-                        else {
-                            hianyzo = Main.gameData.pakol.egysegek[0].getHp() * rplayerUnits[0] - Main.gameData.pakol.egysegek[0].getOsszHp();
-                            if(hianyzo > maxHeal)
-                                hianyzo = maxHeal;
-                        }
-
+                        int hianyzo = Main.gameData.pakol.egysegek[0].getHp() * Main.gameData.pakol.egysegek[0].getDb() - Main.gameData.pakol.egysegek[0].getOsszHp();
                         Main.gameData.pakol.egysegek[0].setOsszHp(Main.gameData.pakol.egysegek[0].getOsszHp() + hianyzo);
-                        details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[0].getOsszHp());
                     }
+                    details.setText("A kiválaszott egység néhány tagja fel lett támasztva! Életerő: " + Main.gameData.pakol.egysegek[0].getOsszHp());
                     if(halott) {
                         for(Node node : field.getChildren()) {
                             if(node instanceof ImageView) {
@@ -888,10 +889,7 @@ public class FightController implements Initializable {
                     }
                     int maxHeal = Main.gameData.pakol.getVarazsero() * 50;
                     int baseHp = Main.gameData.pakol.egysegek[1].getHp() * Main.gameData.pakol.egysegek[1].getDb();
-                    boolean halott = false;
-                    if(Main.gameData.pakol.egysegek[1].getOsszHp() == 0) {
-                        halott = true;
-                    }
+                    boolean halott = Main.gameData.pakol.egysegek[1].getOsszHp() == 0;
 
                     if(halott) {
                         Main.gameData.pakol.egysegek[1].setOsszHp(Math.min(maxHeal, baseHp));
@@ -961,7 +959,6 @@ public class FightController implements Initializable {
                                     else {
                                         node.setId("r" + Main.gameData.pakol.egysegek[2].getNev());
                                     }
-
 
                                     //most a mapra
                                     Main.gameData.map[GridPane.getRowIndex(node)][GridPane.getColumnIndex(node)] = Main.gameData.pakol.egysegek[2];
@@ -1234,8 +1231,62 @@ public class FightController implements Initializable {
             currentSorszam++;
 
         //agyfaszt kapok geci
-        if(elozo != null && elozo != currentsr[currentSorszam - 1])
-            currentSorszam--;
+        try {
+            if(elozo != null && elozo != currentsr[currentSorszam - 1])
+                currentSorszam--;
+        }
+        catch(Exception e) {
+            while(currentSorszam > currentsr.length)
+            currentSorszam -= 1;
+        }
+
+        //region nyertél
+        int lEloEgysegek = 0, rEloEgysegek = 0;
+
+        System.out.println(currentsr.length);
+
+        for(Egyseg e : currentsr) {
+            if(e == null) {
+                info.setText("Döntetlen!");
+                break;
+            }
+            if(e.getGazda() == Main.gameData.lplayer) {
+                lEloEgysegek++;
+            }
+            else if(e.getGazda() == Main.gameData.rplayer) {
+                rEloEgysegek++;
+            }
+        }
+
+        System.out.println(lEloEgysegek + " " + rEloEgysegek);
+
+        if(currentsr.length >= 1 && rEloEgysegek == 0) {
+            info.setText("1. játékos nyert!");
+            Main.gameData.gyoztes = Main.gameData.lplayer;
+        }
+        else if(currentsr.length >= 1 && lEloEgysegek == 0) {
+            info.setText(Main.gameData.multiplayer ? "2." : "BOT" + " játékos nyert!");
+            Main.gameData.gyoztes = Main.gameData.rplayer;
+        }
+        else if(lEloEgysegek == 0 && rEloEgysegek == 0) {
+            info.setText("A meccs döntetlennel zárult.");
+            Main.gameData.gyoztes = null;
+        }
+
+
+        if(lEloEgysegek == 0 ||rEloEgysegek == 0) {
+
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("epilogue.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage stage = (Stage) field.getScene().getWindow();
+            stage.setResizable(false);
+            stage.setScene(scene);
+            return;
+
+        }
+
+        //endregion
+
 
 
         if(currentSorszam == currentsr.length) {
@@ -1285,52 +1336,6 @@ public class FightController implements Initializable {
             currentsr[currentSorszam].setKimarad(false);
             kovetkezo();
         }
-        //endregion
-
-        //region nyertél
-        int lEloEgysegek = 0, rEloEgysegek = 0;
-
-        System.out.println(currentsr.length);
-
-        for(Egyseg e : currentsr) {
-            if(e == null) {
-                info.setText("Döntetlen!");
-                break;
-            }
-            if(e.getGazda() == Main.gameData.lplayer) {
-                lEloEgysegek++;
-            }
-            else if(e.getGazda() == Main.gameData.rplayer) {
-                rEloEgysegek++;
-            }
-        }
-
-        System.out.println(lEloEgysegek + " " + rEloEgysegek);
-
-        if(currentsr.length >= 1 && rEloEgysegek == 0) {
-            info.setText("1. játékos nyert!");
-            Main.gameData.gyoztes = Main.gameData.lplayer;
-        }
-        else if(currentsr.length >= 1 && lEloEgysegek == 0) {
-            info.setText(Main.gameData.multiplayer ? "2." : "BOT" + " játékos nyert!");
-            Main.gameData.gyoztes = Main.gameData.rplayer;
-        }
-        else if(lEloEgysegek == 0 && rEloEgysegek == 0) {
-            info.setText("A meccs döntetlennel zárult.");
-            Main.gameData.gyoztes = null;
-        }
-
-
-        if(lEloEgysegek == 0 ||rEloEgysegek == 0) {
-
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("epilogue.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
-            Stage stage = (Stage) field.getScene().getWindow();
-            stage.setResizable(false);
-            stage.setScene(scene);
-
-        }
-
         //endregion
 
 
@@ -1789,6 +1794,30 @@ public class FightController implements Initializable {
                     details1.setText(szenvedoUnit + " meg lett villámcsapva! " + Main.gameData.pakol.getVarazsero() * 30 + " sebzést szenvedett.");
                     lmana.setText(Main.gameData.lplayer.getMana() + " mana");
                     rmana.setText(Main.gameData.rplayer.getMana() + " mana");
+
+                    if(megtamadott.getOsszHp() < 0) {
+                        megtamadott.setDb(0);
+                        megtamadott.setOsszHp(0);
+
+                        //tüntessük EL
+                        //mező
+                        for (Node node : field.getChildren()) {
+                            if (node instanceof ImageView && GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
+                                if (GridPane.getRowIndex(node) == GridPane.getRowIndex((Node) event.getSource()) && GridPane.getColumnIndex(node) == GridPane.getColumnIndex((Node) event.getSource())) {
+                                    ((ImageView) node).setImage(notnull);
+                                    node.setEffect(null);
+                                    node.setId(null);
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        //map
+                        Main.gameData.map[GridPane.getRowIndex((Node) event.getSource())][GridPane.getColumnIndex((Node) event.getSource())] = null;
+
+
+                    }
 
                     villamcsapasTamad = false;
                     jelolesTorlese();

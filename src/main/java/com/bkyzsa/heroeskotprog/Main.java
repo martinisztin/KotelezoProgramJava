@@ -7,6 +7,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * A program fő osztálya, ahonnan elindul.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class Main extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException {
@@ -22,6 +28,10 @@ public class Main extends javafx.application.Application {
 
     public static DataContainer gameData;
 
+    /**
+     * A főosztály main metódusa
+     * @param args  konzolos bemeneti argumentumok
+     */
     public static void main(String[] args) {
         launch();
     }

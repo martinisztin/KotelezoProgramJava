@@ -19,6 +19,13 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * A shop.fxml controller osztálya. Tartalmazza a játékbeli objektumok bolt rendszerét.
+ * Ezekben a controllerekben találhatók a grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class ShopController implements Initializable {
 
     @FXML

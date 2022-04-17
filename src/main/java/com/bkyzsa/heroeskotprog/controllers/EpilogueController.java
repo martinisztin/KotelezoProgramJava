@@ -14,6 +14,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Az epilogue.fxml controller osztálya. Ezekben a controllerekben találhatók a
+ *  * grafikus kinézethez tartozó backend funkciók.
+ * @author Isztin Martin
+ * @version 1.0
+ */
+
 public class EpilogueController implements Initializable {
 
     @FXML
